@@ -49,9 +49,9 @@ emezura@uv.mx}
 \begin{abstract}
 This work presents a metaheuristic for bilevel optimization using a quasi-Newton
 method and Tykhonov regularization, called Quasi-Newton Bilevel Centers Algorithm
-(QBCA), to deal with bilevel optimization problems. The using the Tykhonov
+(QBCA), to deal with bilevel optimization problems. The using of Tykhonov
 regularization for bilevel optimization is used to handle problems with nonunique
-lower level solutions. Besides, a quasi-Newton method is used to handle unfeasible
+lower level solutions. Besides, a quasi-Newton method is adapted to deal with unfeasible
 solutions. The performance of this proposal is assessed by using representative
 test functions for bilevel optimization. The results based on accuracy and number
 of evaluations are promising when QBCA is compared against and an efficient algorithm
@@ -69,7 +69,7 @@ bilevel optimization, evolutionary algorithm, quasi-Newton, Tykhonov regularizat
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%--------------------------
 
 First concepts on Bilevel Optimization (BO) were introduced in 1934 by Von Stackelberg
-in \cite{von2010market}  and nowadays was formalized as a new kind of optimization
+\cite{von2010market}  and nowadays was formalized as a new kind of optimization
 problem which is gaining interest by researchers in recent years. A BO problem
 contains a nested optimization problem as a constraint (hierarchical structure is
 illustrated in Fig. \ref{fig:bilevel}). Both optimization levels can be constrained,
@@ -106,6 +106,16 @@ Now, we are able to define a general BO problem with
 single-objective functions at both levels
 \cite{bard2013practical,dempe2002foundations}.%\\
 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/bilevel.pdf}
+    \caption{Diagram of a bilevel optimization problem. Here, $y^*$ 
+            is defined as in Eq. \ref{eqn:y-arg}. Moreover, $(x,\ y^*)$
+            represents a feasible solution.}
+    \label{fig:bilevel}
+\end{figure}
+% 
+
 \begin{definition}\textbf{(Bilevel Optimization Problem)}
     The 5-tuple $(F, \ f, \ X, \ Y, \ \mathbb{R} )$ is called bilevel optimization
     problem if the the upper-level/leader's objective function
@@ -125,7 +135,7 @@ single-objective functions at both levels
     % 
     \begin{align}
         \label{eqn:y-arg}
-        &\vec{y} \in \Psi(\vec{x}) = \arg \min_{z\in Y} \{ f(\vec{x}, \vec{z}) \ : g_j(\vec{x}, \vec{y})  \leq 0 \} \\
+        &\vec{y} \in \Psi(\vec{x}) = \arg \min_{z\in Y} \{ f(\vec{x}, \vec{z}) \ : g_j(\vec{x}, \vec{z})  \leq 0 \} \\
         &  G_{i}(\vec{x}, \vec{y}) \leq 0,
         % 
     \end{align}
@@ -139,14 +149,6 @@ single-objective functions at both levels
 Note that, for simplicity, equality constraints were not considered in the definition
 above. Figure \ref{fig:bilevel} shows a schematic diagram of a BO problem.
 % 
-\begin{figure}[!ht]
-    \centering
-    \includegraphics[width=0.9\linewidth]{img/bilevel.pdf}
-    \caption{Diagram of a bilevel optimization problem. Here, $y^*$ 
-            is defined as in Eq. \ref{eqn:y-arg}. Moreover, $(x,\ y^*)$
-            represents a feasible solution.}
-    \label{fig:bilevel}
-\end{figure}
 
 How complicated are bilevel optimization problems?  In 1985, Jeroslow probed that
 linear bilevel optimization problems are NP-hard \cite{jeroslow1985polynomial},
@@ -158,20 +160,19 @@ are not linear, e.g., taxation, border security problems, transportation problem
 machine learning algorithms tuning, among others \cite{bard2013practical,sinha2018review,arroyo2010bilevel}.
 Hence, BO problems requires effective algorithms to approximate accurate enough
 solutions.
-\\
 
 Due to the importance of BO, many authors have proposed different kind of solutions
 for those problems from mathematical approaches (Karush-Kuhn-Tucker condition for
 single-level reduction, gradient based algorithm, etc.) \cite{dempe2002foundations,shi2005extended}
 to swarm intelligence (particle swarm optimization) and evolutionary computation
 (genetic algorithms, evolution strategies, differential evolution)
-\cite{derrac2011practical,angelo2013differential,li2006hierarchical}.\\
+\cite{derrac2011practical,angelo2013differential,li2006hierarchical}.
 
 In order to handle BO problems three strategies are identified: (1) single-level
 reduction (2) nested and (3) penalty methods. Single-level reduction is restricted
 to smooth enough functions and is used to transform a BO problem into a single-level/traditional
 problem by using Karush-Kuhn-Tucker conditions as a consequence, this strategy
-could not be applied in real-world problems  \cite{dempe2002foundations,colson2007overview}. %
+could not be applied in some real-world problems  \cite{dempe2002foundations,colson2007overview}. %
 Nested strategies can be effective when solve BO problems in a direct way  however
 a high computational cost is required when high-dimensionality is present or when
 objective functions are expensive to compute. Penalty methods are used to handle
@@ -181,23 +182,24 @@ strategy is often hard to calibrate particularly for large-scale problems nevert
 is simple to understand \cite{savard1994steepest,white1993penalty}.\\
 
 As mentioned above, population-based metaheuristics for BO problems, most research
-efforts are focused on evolutionary computation and swarm intelligence algorithms
-because they have been successfully applied to solve single-level optimization problems.
-However, metaheuristics combined with mathematical programing methods provide
+efforts are focused on swarm intelligence algorithms and evolutionary computation
+since such methods have been successfully applied to solve single-level optimization
+problems. However, metaheuristics combined with mathematical programing methods provide
 efficient and accuracy proposals since some assumptions are made and computational
-cost is often reduced. This is the main motivation of this research work, where a
-first proposal of a population based algorithm, originally designed for global
-optimization \cite{Mejia2018}, is now presented to deal with BO problems combined
-with a Quasi-Newton method and using the Tykhonov Regularization to handle problems
-with nonunique lower level solutions. Here, an unconstrained nested scheme is
-considered where both objective functions are nonnegative (not a restrictive assumption)
-that should be maximized.
+cost is often reduced \cite{sinha2013efficient,wang2005evolutionary}. This is the
+main motivation of this research work: combine a first proposal of a population based
+algorithm, originally designed for global optimization \cite{Mejia2018} with a quasi-Newton
+method \cite{fletcher2013practical} and the Tykhonov Regularization \cite{dempe2002foundations}
+to handle problems with nonunique lower level solutions. Here, an unconstrained
+nested scheme is considered where both objective functions are nonnegative (not a
+restrictive assumption) and should be maximized.
 
 \section{QBCA} % (fold)
 \label{sec:qca}
 
 Let us start our discussion about the approximation defining the
-2-population for Bilevel Optimization (BO).
+2-population for Bilevel Optimization (BO). Note that we are assuming a maximization
+process.
 
 \begin{definition}
 	\label{def:pop2}
@@ -249,11 +251,12 @@ strongly convex, then the following problem:
 has a uniquely determined optimal solution for each $\alpha > 0$. 
 Moreover, Tykhonov regularization provides theorems for convergence to the optimal
 solution when some assumptions are satisfied \cite{dempe2002foundations}. 
-\\
+%\\
 
 Here, the Eq. \ref{eqn:regularization2} will be used to give a bias to upper level
 regions where leader's objective function is optimized with a small perturbation
-of the follower's objective function values. 
+of the follower's objective function values when the nonnegative parameter $\beta$
+is small enough. 
 
 \subsection{The Center of Mass as a Weighted Sum} % (fold)
 \label{sub:the_center_of_mass_as_a_weighted_sum}
@@ -311,7 +314,7 @@ $
     (\vec{x}, \vec{v}_{\text{worst}}) \in \arg \min \{\varphi_f(\vec{x}, \vec{y} )  \ : \ (\vec{x}, \vec{y}) \in V \}
 $. Note that Eq. \ref{eqn:yc} generates follower's parameters close to a feasible
 solution when $\eta_{Y}$ is small enough and $f$ is stable (Lipschitz continuous)
-around $\vec{y} \in \Psi(\vec{x}) $ for  $\vec{x} \in X$. %\\
+around $\vec{y} \in \Psi(\vec{x}) $ for  $\vec{x} \in X$ (see \cite{dempe2002foundations}). %\\
 % 
 
 % 
@@ -323,9 +326,10 @@ around $\vec{y} \in \Psi(\vec{x}) $ for  $\vec{x} \in X$. %\\
 \end{figure}
 % 
 The strategy detailed above can be useful to approximate solution for a BO problem
-when each solution in  $P$ is feasible, however the new solution $(\vec{p},\ \vec{y}_c)$
-could be infeasible. The next section is focused on translate $(\vec{p},\ \vec{y}_c)$
-close to a feasible solution (see Fig. \ref{fig:qca}).
+when each solution in  $P$ is feasible and $\eta_{Y}$ is small enough, however
+the new solution $(\vec{p},\ \vec{y}_c)$ could be infeasible. The next section
+is focused on translate $(\vec{p},\ \vec{y}_c)$ close to a feasible region
+(see Fig. \ref{fig:qca}).
 
 
 \subsection{Quasi-Newton Method for The Lower Level Problem} % (fold)
@@ -376,7 +380,7 @@ described in Algorithm \ref{alg:BFGS-LL}. \\
 Now, we can summarize our proposal to approximate a solution for a given bilevel
 optimization problem: First, generate a random 2-population $P \in X \times Y$ of
 size $N$ and for each solution $(\vec{x}, \vec{y})$ in $P$ where $\vec{y} \in \arg \min_{z\in Y} \{ f(x,z)\}$
-is computed by applying the algorithm described in \cite{eca}. After that, generate
+is computed by applying the algorithm described in \cite{Mejia2018}. After that, generate
 $U, V \in X\times Y$ uniformly at random with $k$ elements. Compute $\vec{p}$ and
 $\vec{y}_c$ using $U$, $V$ with Eq. \ref{eqn:leaderp} and Eq. \ref{eqn:yc}. Apply
 the Algorithm \ref{alg:BFGS-LL} to $\vec{y}_c$ to approximate a feasible solution
@@ -394,17 +398,17 @@ new solution inserted  in $P$.
     \caption{QBCA pseudocode}
     \label{alg:QBCA}
     \begin{algorithmic}[1]
-        \STATE Choose $k$ and $N$.
+        \STATE Choose $k$.
         \STATE $N \gets k * D$
         \STATE Initialize a 2-population $P\subset X\times Y$ with $N$ elements
         \WHILE{the end criterion is not achieved}
             \FOR {each $(\vec{x},\; \vec{y})$ in $P$}
-                \STATE Generate $U \subset P_X$ and $V \subset P_Y$ such that $|U| = |V| = k$
-                \STATE Calculate $\vec{c_X}$ using $U$ with Eq. (\ref{eqn:centerX})
+                \STATE Generate $U \subset P$ and $V \subset P$ with $|U| = |V| = k$
+                \STATE Compute $\vec{c_X}$ using $U$ with Eq. (\ref{eqn:centerX})
                 \STATE Calculate $\vec{c_Y}$ using $V$ with Eq. (\ref{eqn:centerY})
                 \STATE $ \vec{p} \gets \vec{x} + \eta_{X} (\vec{c}_X - \vec{u}_{\text{worst}})$
                 \STATE Compute $ \vec{y}_c $ by using Eq. \ref{eqn:yc}
-                \STATE $ \vec{q} $ is calculated using $\vec{y}_c$ and and Algorithm \ref{alg:BFGS-LL}
+                \STATE $ \vec{q} $ is calculated using $\vec{y}_c$ and the Algorithm \ref{alg:BFGS-LL}
                 
                 \IF{$ \varphi_f (\vec{x},\ \vec{y}) < \varphi_f (\vec{p},\ \vec{q})  $}
                     \STATE Replace worst element in $P$ with $(\vec{p},\ \vec{q})$.
@@ -427,8 +431,8 @@ number of functions evaluations (MFEs) was $1000D_{UL}=5,000$ for the upper and
 unlimited lower level evaluations, $\alpha = \beta = 1 / 20$ and $s_{\min} = 1/100$.
 The  algorithm stopped when the accuracy ($1\times 10^{-4}$) or the MFEs was reached.
 As described before, each solution in the 2-population should be feasible, then
-ECA algorithm \cite{eca} is used to approximate feasible solution with $1000D_{LL}$
-as the maximum number of evaluations.\\
+ECA algorithm \cite{Mejia2018} is used to approximate feasible solution with $1000D_{LL}$
+as the maximum number of evaluations.
 
 Algorithm \ref{alg:QBCA} was compared against BLEAQ-II which is a state-of-the-art
 evolutionary algorithm for BO problems \cite{sinha2018review,sinha2013efficient}.
@@ -445,7 +449,7 @@ in five SMD problems. In terms of  objective function evaluations QBCA saved on
 average 24\% of NFEs at upper level in six test problems (see Table \ref{tab:ul-comparative-fes}).
 Also, BLEAQ-II outperforms to QBCA saving on average 68\% of function evaluations
 at lower level problem. Finally, Tables \ref{tab:ul-accur}-\ref{tab:ll-evals} 
-present some statistics in terms of accuracy and functions evaluations.
+present some statistics of accuracy and functions evaluations.
 
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -601,8 +605,8 @@ SMD8 & \textbf{2432}  & 5569          &  483680 & \textbf{289886} \\ \hline
 In this work, we propose a population based metaheuristics for the nested case 
 where a quasi-Newton method was used to handle unfeasible solutions as well as the 
 Tykhonov regularization for bilevel optimization. Some assumptions were made in order
-to integrate a physics-inspired metaheuristics based on the center of mass concept.
-The results showed that QBCA cab be competitive in some bilevel optimization problem.
+to integrate a physics-inspired metaheuristics with a quasi-Newton and a problem relaxation.
+The results showed that QBCA can be competitive in some bilevel optimization problems.
 Although, when some assumptions about the follower objective function were made,
 QBCA was posed. Eight test problems were solved to assess the performance of the
 proposed algorithm in terms of upper/lower level accuracy and function evaluations
