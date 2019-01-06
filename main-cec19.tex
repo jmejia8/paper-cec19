@@ -1,0 +1,624 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% addtional packages
+\usepackage{algorithm,algorithmic}
+\usepackage{amsthm,amsmath,amssymb}
+
+% additoonal envs.
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{note}{Note}[section]
+\newtheorem{example}{Example}[section]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+\title{A Metaheuristic for Bilevel Optimization Using a Quasi-Newton Method and Tykhonov Regularization}
+
+\author{\IEEEauthorblockN{1\textsuperscript{st} Jes\'us-Adolfo Mej\'ia-de-Dios}
+\IEEEauthorblockA{\textit{Artificial Intelligence Research Center} \\
+\textit{University of Veracruz}\\
+Xalapa, Veracruz, Mexico \\
+jesusmejded@gmail.com}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Efr\'en Mezura-Montes}
+\IEEEauthorblockA{\textit{Artificial Intelligence Research Center} \\
+\textit{University of Veracruz}\\
+Xalapa, Veracruz, Mexico \\
+emezura@uv.mx}
+}
+
+\maketitle
+
+\begin{abstract}
+This work presents a metaheuristic for bilevel optimization using a quasi-Newton
+method and Tykhonov regularization, called Quasi-Newton Bilevel Centers Algorithm
+(QBCA), to deal with bilevel optimization problems. The using the Tykhonov
+regularization for bilevel optimization is used to handle problems with nonunique
+lower level solutions. Besides, a quasi-Newton method is used to handle unfeasible
+solutions. The performance of this proposal is assessed by using representative
+test functions for bilevel optimization. The results based on accuracy and number
+of evaluations are promising when QBCA is compared against and an efficient algorithm
+called BLEAQ-II.
+\end{abstract}
+
+\begin{IEEEkeywords}
+bilevel optimization, evolutionary algorithm, quasi-Newton, Tykhonov regularization
+\end{IEEEkeywords}
+
+
+\section{Introduction} % (fold)
+\label{sec:introduction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%--------------------------
+
+First concepts on Bilevel Optimization (BO) were introduced in 1934 by Von Stackelberg
+in \cite{von2010market}  and nowadays was formalized as a new kind of optimization
+problem which is gaining interest by researchers in recent years. A BO problem
+contains a nested optimization problem as a constraint (hierarchical structure is
+illustrated in Fig. \ref{fig:bilevel}). Both optimization levels can be constrained,
+unconstrained, single and/or multi-objective, discrete and/or continuous defined
+\cite{bard2013practical,dempe2002foundations}. Many real-world problem keep a
+hierarchical structure for which BO can be useful to model them, e.g. considers
+a decision-making process, where a upper level authority (leader) optimizes their
+objectives restricted to optimal decisions/solutions given by a  lower level authority (follower)
+\cite{brotcorne2001bilevel,kalashnikov2010comparison,sinha2015transportation,von1945theory,wang2014bilevel}.\\
+
+%--------------------------------------------------
+%--------------------------------------------------
+A definition of bilevel optimization problems can be given in terms of traditional
+optimization definition. Thus, we start by describing a traditional optimization
+problem. Without loss of generality, an optimization problem can be defined as
+finding the set \cite{chong2013introduction,rao2009engineering}:
+% 
+\begin{align}
+    \label{eqn:Xargmin}
+    X^* &= \arg \min_{\vec{x} \in X} f(\vec{x}) \\ \nonumber
+    &= \{ \vec{x}^* \in X \ : \ f(\vec{x}^*) \leq f( \vec{x} ), \ 
+    % 
+    \forall
+    % 
+    \vec{x} \in X \},
+\end{align}
+% 
+where a bounded below function $f$ , i.e., $f(x^*)> -\infty$ is called objective
+function. $X$ is a $D$-dimensional parameter space, i.e. $X \subset \mathbb{R}^D$
+is the domain for $\vec{x}$ representing constraints on
+allowable values for $\vec{x}$.\\
+
+Now, we are able to define a general BO problem with
+single-objective functions at both levels
+\cite{bard2013practical,dempe2002foundations}.%\\
+
+\begin{definition}\textbf{(Bilevel Optimization Problem)}
+    The 5-tuple $(F, \ f, \ X, \ Y, \ \mathbb{R} )$ is called bilevel optimization
+    problem if the the upper-level/leader's objective function
+    $F: X \times Y \to \mathbb{R}$ and the lower-level/follower's objective
+    function $f: X \times Y \to \mathbb{R}$. Then, the optimization process is
+    formulated as follows:\\
+    % 
+    % 
+    \noindent
+    Minimize
+    \begin{equation}
+        F(\vec{x},\ \vec{y}) \text{ with } \ \vec{x} \in X , \ \vec{y} \in Y 
+        \label{eqn:minF1}
+    \end{equation}
+    % 
+    subject to
+    % 
+    \begin{align}
+        \label{eqn:y-arg}
+        &\vec{y} \in \Psi(\vec{x}) = \arg \min_{z\in Y} \{ f(\vec{x}, \vec{z}) \ : g_j(\vec{x}, \vec{y})  \leq 0 \} \\
+        &  G_{i}(\vec{x}, \vec{y}) \leq 0,
+        % 
+    \end{align}
+    % 
+    where $X \subseteq \mathbb{R}^n $
+    and $Y \subseteq \mathbb{R}^m$.
+    Here, $G_i$ (for $i = 1,2,\ldots,I$) and $g_j$ (for $j = 1,2,\ldots,J$) are
+    inequality constraints for the upper and lower level, respectively.
+\end{definition}
+% 
+Note that, for simplicity, equality constraints were not considered in the definition
+above. Figure \ref{fig:bilevel} shows a schematic diagram of a BO problem.
+% 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/bilevel.pdf}
+    \caption{Diagram of a bilevel optimization problem. Here, $y^*$ 
+            is defined as in Eq. \ref{eqn:y-arg}. Moreover, $(x,\ y^*)$
+            represents a feasible solution.}
+    \label{fig:bilevel}
+\end{figure}
+
+How complicated are bilevel optimization problems?  In 1985, Jeroslow probed that
+linear bilevel optimization problems are NP-hard \cite{jeroslow1985polynomial},
+after that, Hansen et al. showed that some BO problems are strongly NP-hard since
+evaluating a solution in a bilinear programming problem is also NP-hard
+\cite{hansen1992new,vicente1994descent}. Moreover, many real-world problems can
+be naturally modeled as BO problems \cite{sinha2018review} where objective functions
+are not linear, e.g., taxation, border security problems, transportation problems,
+machine learning algorithms tuning, among others \cite{bard2013practical,sinha2018review,arroyo2010bilevel}.
+Hence, BO problems requires effective algorithms to approximate accurate enough
+solutions.
+\\
+
+Due to the importance of BO, many authors have proposed different kind of solutions
+for those problems from mathematical approaches (Karush-Kuhn-Tucker condition for
+single-level reduction, gradient based algorithm, etc.) \cite{dempe2002foundations,shi2005extended}
+to swarm intelligence (particle swarm optimization) and evolutionary computation
+(genetic algorithms, evolution strategies, differential evolution)
+\cite{derrac2011practical,angelo2013differential,li2006hierarchical}.\\
+
+In order to handle BO problems three strategies are identified: (1) single-level
+reduction (2) nested and (3) penalty methods. Single-level reduction is restricted
+to smooth enough functions and is used to transform a BO problem into a single-level/traditional
+problem by using Karush-Kuhn-Tucker conditions as a consequence, this strategy
+could not be applied in real-world problems  \cite{dempe2002foundations,colson2007overview}. %
+Nested strategies can be effective when solve BO problems in a direct way  however
+a high computational cost is required when high-dimensionality is present or when
+objective functions are expensive to compute. Penalty methods are used to handle
+restrictions in a constrained method in order to transform it into an unconstrained
+optimization problem by adding some parameters to control the penalization. This 
+strategy is often hard to calibrate particularly for large-scale problems nevertheless
+is simple to understand \cite{savard1994steepest,white1993penalty}.\\
+
+As mentioned above, population-based metaheuristics for BO problems, most research
+efforts are focused on evolutionary computation and swarm intelligence algorithms
+because they have been successfully applied to solve single-level optimization problems.
+However, metaheuristics combined with mathematical programing methods provide
+efficient and accuracy proposals since some assumptions are made and computational
+cost is often reduced. This is the main motivation of this research work, where a
+first proposal of a population based algorithm, originally designed for global
+optimization \cite{Mejia2018}, is now presented to deal with BO problems combined
+with a Quasi-Newton method and using the Tykhonov Regularization to handle problems
+with nonunique lower level solutions. Here, an unconstrained nested scheme is
+considered where both objective functions are nonnegative (not a restrictive assumption)
+that should be maximized.
+
+\section{QBCA} % (fold)
+\label{sec:qca}
+
+Let us start our discussion about the approximation defining the
+2-population for Bilevel Optimization (BO).
+
+\begin{definition}
+	\label{def:pop2}
+    Consider the unconstrained BO problem $(F, \ f, \ X, \ Y, \ \mathbb{R} )$. A
+    2-population with size $N$ is defined as follows:
+    % 
+    $$
+        P = \{  (\vec{x}_i, \ \vec{y}_i) \in X \times Y \ : \
+                \vec{x}_i \in P_X, \ \vec{y}_i \in P_Y, \ i=1,\ldots,N
+            \}
+    $$
+    % 
+    % 
+    where $P_X \subset X$ and $P_Y \subset Y$ with $|P_X| = |P_Y| = N$.
+\end{definition}
+% 
+In Definition \ref{def:pop2}, each $\vec{x}_i \in P_X$ in a 2-population has a
+corresponding $\vec{y}_i \in P_Y$ which is an approximation of a feasible solution,
+i.e., $(\vec{x}_i, \ \vec{y}_j)$ for $i \neq j$ is  not a valid solution.
+% 
+
+Regularization for BO problem are used to handle problems with nonunique lower
+level solutions.  Tykhonov regularization is applied when the lower level problem
+is convex and has not a unique optimal solution but the upper level objective function
+is strongly convex with respect to $\vec{x}$ (see \cite{dempe2002foundations}).
+Based on this, we can define the 2-penalization functions.
+
+\begin{definition}
+    Suppose $(F, \ f, \ X, \ Y, \ \mathbb{R} )$ is a bilevel optimization problem,
+    then:
+    \begin{align}
+        \label{eqn:regularization}
+        \varphi_f (\vec{x},\ \vec{y}) := \alpha F(\vec{x},\ \vec{y}) +  f(\vec{x},\ \vec{y}) \\
+        \label{eqn:regularization2}
+        \varphi_F (\vec{x},\ \vec{y}) := F(\vec{x},\ \vec{y}) +  \beta f(\vec{x},\ \vec{y})
+    \end{align}
+    are called 2-penalization functions, where $\alpha, \beta \in (0,\ 1]$.
+\end{definition}
+% 
+The Eq. \ref{eqn:regularization} is known as Tykhonov regularization which is a
+perturbation of a bilevel optimization problem where the lower level problem has
+not a unique optimal solution but the upper level objective function $F$ is 
+strongly convex, then the following problem:
+\begin{equation}
+	\min_x \{ f(x,y) + \alpha F(x, y) : g_j(x, y), j=1,2,\ldots, J\} 
+	\label{eqn:relaxed}
+\end{equation}
+% 
+has a uniquely determined optimal solution for each $\alpha > 0$. 
+Moreover, Tykhonov regularization provides theorems for convergence to the optimal
+solution when some assumptions are satisfied \cite{dempe2002foundations}. 
+\\
+
+Here, the Eq. \ref{eqn:regularization2} will be used to give a bias to upper level
+regions where leader's objective function is optimized with a small perturbation
+of the follower's objective function values. 
+
+\subsection{The Center of Mass as a Weighted Sum} % (fold)
+\label{sub:the_center_of_mass_as_a_weighted_sum}
+% 
+Adapting the strategy detailed in \cite{Mejia2018} for bilevel optimization, the
+center of mass for the upper level is defined as follows:
+% 
+\begin{equation}
+    \vec{c}_X = \sum_{(\vec{x}, \vec{y})\in U} \varphi_F(\vec{x},\ \vec{y}; \ \beta) \cdot \vec{x}
+    \label{eqn:centerX}
+\end{equation}
+% 
+where $U \subset P$ is generated choosing its elements uniformly at random.
+Note that, at the upper level, $\varphi_F (\vec{x},\ \vec{y})$ is used to penalize
+the $f$ values when $\beta\in (0, 1]$. At lower level, $\varphi_f (\vec{x},\ \vec{y})$
+is used to handle nonunique lower level solutions (when Tykhonov assumptions 
+satisfied) and penalizes the $F$ values when $\alpha$ is small enough. Thus, $c_X$
+is biased toward smaller values of $F$ than $f$ and according to this, a new vector
+of parameters for the upper level is generated as follows:
+% 
+\begin{equation}
+    \vec{p} = \vec{x} + \eta_{X} (\vec{c}_X - \vec{u}_{\text{worst}}),
+	\label{eqn:leaderp}
+\end{equation}
+% 
+where
+$
+    (\vec{u}_{\text{worst}}, \vec{y}) \in \arg \min \{\varphi_F(\vec{x}, \vec{y} )  \ : \ (\vec{x}, \vec{y}) \in U \} 
+$ %
+% 
+and this new direction $\vec{p}$ will be called \textit{current-to-center} direction. %
+On the the other hand, the center of mass for the lower level is defined on
+$V \subset P$ in Eq. \ref{eqn:centerY}:
+% 
+\begin{equation}
+    \vec{c}_Y = \sum_{(\vec{x}, \vec{y})\in V} \varphi_f(\vec{x},\ \vec{y};\ \alpha) \cdot \vec{y}.
+    \label{eqn:centerY}
+\end{equation}
+% 
+It can be shown that $\vec{c}_Y$ is biased toward smaller values of relaxed
+problem in Eq. \ref{eqn:relaxed} for small positive values of $\alpha$.
+% 
+The new direction $\vec{y}_c$ should be close to a feasible solution and biased
+to the center of mass. Thus, it is necessary to ensure that letting $(\vec{x}, \vec{y}_{\text{nearest}}) $
+be in $P$ such that $\vec{x}$ is close enough to $\vec{p}$, i.e., $ \| \vec{x} - \vec{p} \| = \min\{ \| \vec{x} - \vec{p} \| \ : \ (\vec{x}, \vec{y}) \in P  \} $.
+Hence,
+\begin{equation}
+    \vec{y}_c = \vec{y}_{\text{nearest}} + \eta_{Y} \dfrac{\vec{c}_Y - \vec{v}_{\text{worst}}}{\| \vec{c}_Y - \vec{v}_{\text{worst}} \|},
+    \label{eqn:yc}
+\end{equation} %
+% 
+where $\eta_Y$ takes small positive values and 
+% 
+$
+    (\vec{x}, \vec{v}_{\text{worst}}) \in \arg \min \{\varphi_f(\vec{x}, \vec{y} )  \ : \ (\vec{x}, \vec{y}) \in V \}
+$. Note that Eq. \ref{eqn:yc} generates follower's parameters close to a feasible
+solution when $\eta_{Y}$ is small enough and $f$ is stable (Lipschitz continuous)
+around $\vec{y} \in \Psi(\vec{x}) $ for  $\vec{x} \in X$. %\\
+% 
+
+% 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.95\linewidth]{img/x-and-y.pdf}
+    \caption{QBCA procedure scheme.}
+    \label{fig:qca}
+\end{figure}
+% 
+The strategy detailed above can be useful to approximate solution for a BO problem
+when each solution in  $P$ is feasible, however the new solution $(\vec{p},\ \vec{y}_c)$
+could be infeasible. The next section is focused on translate $(\vec{p},\ \vec{y}_c)$
+close to a feasible solution (see Fig. \ref{fig:qca}).
+
+
+\subsection{Quasi-Newton Method for The Lower Level Problem} % (fold)
+\label{sub:nonsmooth_optimization_via_bfgs}
+
+Quasi-Newton methods are known to be generalizations of the secant method for
+finding the root of the gradient for $D$-dimensional problems \cite{fletcher2013practical,liu1989limited}.
+In $D$-dimensional problems, the secant equation does not specify a unique solution,
+and quasi-Newton methods differ in how they handle that issue. Quasi-Newton methods
+are widely used for numerical optimization when the objective function is smooth
+\textit{almost everywhere} \cite{lewis2013nonsmooth}, since the Hessian matrix
+(second derivate of gradient) is approximated using updates specified by gradient
+evaluations (in practice, approximation of gradient). In theory, when $f$ is not
+smooth in a point the algorithm should be stopped. 
+
+\begin{algorithm}[!ht]
+    \caption{BFGS-LL: Quasi-Newton method for the lower level problem.}
+    \label{alg:BFGS-LL}
+    \begin{algorithmic}[1]
+        \STATE Compute $\vec{y}_c$ with $f$ differentiable at $(\vec{p},\ \vec{y}_c)$
+        \STATE Set $H_0$ to a positive definite matrix (identity matrix $I$)
+        \STATE Put $\vec{q}_0 \gets \vec{y}_c$ and $k \gets 0$
+        \WHILE{the end criterion is not achieved}
+            \STATE $\vec{h}_k \gets -H_k\nabla f(\vec{p}, \vec{q}_k)$
+            \STATE Compute $\gamma_{k}\gets\arg \min f(\vec{p}, \ \vec{q} _{k}+ \gamma_k \vec{h} _{k})$.
+            \STATE $\vec{q}_{k+1} \gets \vec{q}_k  + \gamma_k \vec{h}_k$
+            \IF{ $f$ is not differentiable at $(\vec{p}, \ \vec{q}_{k+1})$}
+                \STATE Stop
+            \ENDIF
+            \STATE $z_k \gets \nabla f(\vec{p}, \ \vec{q}_{k+1}) - \nabla f(\vec{p}, \ \vec{q}_{k}) $
+            \STATE $\displaystyle A_k \gets I - (\vec{h}_k^T \vec{z}_k)^{-1} \vec{h}_k \vec{z}_k^T$
+            \STATE $H_{k+1} \gets A_k H_k A_k^T + \gamma_k(\vec{h}_k^T\vec{z}_k)^{-1}\vec{h}_k \vec{h}_k^T$
+                   which is a positive definite matrix and satisfies the secant
+                   condition $H_{k+1} z_k = \gamma_k \vec{h}_k$
+            \STATE $k \gets k + 1$
+        \ENDWHILE
+        \STATE \textbf{Return} $\vec{q}_k$
+    \end{algorithmic}
+\end{algorithm}
+
+We adapted a successfully used quasi-Newton method called Broyden-Fletcher-Goldfarb-Shanno
+algorithm (BFGS) \cite{fletcher2013practical} in order to handle unfeasible
+solutions $(\vec{p}, \vec{y}_c)$ for bilevel optimization. Such adaptation is
+described in Algorithm \ref{alg:BFGS-LL}. \\
+% 
+
+
+Now, we can summarize our proposal to approximate a solution for a given bilevel
+optimization problem: First, generate a random 2-population $P \in X \times Y$ of
+size $N$ and for each solution $(\vec{x}, \vec{y})$ in $P$ where $\vec{y} \in \arg \min_{z\in Y} \{ f(x,z)\}$
+is computed by applying the algorithm described in \cite{eca}. After that, generate
+$U, V \in X\times Y$ uniformly at random with $k$ elements. Compute $\vec{p}$ and
+$\vec{y}_c$ using $U$, $V$ with Eq. \ref{eqn:leaderp} and Eq. \ref{eqn:yc}. Apply
+the Algorithm \ref{alg:BFGS-LL} to $\vec{y}_c$ to approximate a feasible solution
+$(\vec{p}, \vec{q})$. Evaluate solutions in terms of $\varphi_f$ (to prefer feasible
+solution instead minimum values of $F$ in relaxed problem in Eq. \ref{eqn:relaxed}),
+then replace the worst element in $P$ by $(\vec{p}, \vec{q})$. The algorithm
+stop when the maximum number of evaluations for the upper level is reached or the
+desired accuracy is met or a selection ration $s$ is smaller than a constant $s_{\min}$.
+Here, selection ration is computed as follows: $ s = n /N$ where $n$ is number of
+new solution inserted  in $P$.
+
+
+
+\begin{algorithm}[!ht]
+    \caption{QBCA pseudocode}
+    \label{alg:QBCA}
+    \begin{algorithmic}[1]
+        \STATE Choose $k$ and $N$.
+        \STATE $N \gets k * D$
+        \STATE Initialize a 2-population $P\subset X\times Y$ with $N$ elements
+        \WHILE{the end criterion is not achieved}
+            \FOR {each $(\vec{x},\; \vec{y})$ in $P$}
+                \STATE Generate $U \subset P_X$ and $V \subset P_Y$ such that $|U| = |V| = k$
+                \STATE Calculate $\vec{c_X}$ using $U$ with Eq. (\ref{eqn:centerX})
+                \STATE Calculate $\vec{c_Y}$ using $V$ with Eq. (\ref{eqn:centerY})
+                \STATE $ \vec{p} \gets \vec{x} + \eta_{X} (\vec{c}_X - \vec{u}_{\text{worst}})$
+                \STATE Compute $ \vec{y}_c $ by using Eq. \ref{eqn:yc}
+                \STATE $ \vec{q} $ is calculated using $\vec{y}_c$ and and Algorithm \ref{alg:BFGS-LL}
+                
+                \IF{$ \varphi_f (\vec{x},\ \vec{y}) < \varphi_f (\vec{p},\ \vec{q})  $}
+                    \STATE Replace worst element in $P$ with $(\vec{p},\ \vec{q})$.
+                \ENDIF
+            \ENDFOR
+        \ENDWHILE
+        \STATE Report best solution in $P$
+        % \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\section{Numerical Results and Discussion} % (fold)
+\label{sec:numerical_result}
+
+The QBCA was implemented in Julia Language \cite{bezanson2017julia} and was tested
+using the 10-dimensional SMD problems ($D = D_{UL} = D_{LL} = 5$)
+\cite{sinha2014test,sinha2013efficient}. The parameters were $k = 3$,
+$\eta_{X} \in (0, 2]$, $\eta_{Y} \in (0, 1/2]$ uniformly at random and the maximum
+number of functions evaluations (MFEs) was $1000D_{UL}=5,000$ for the upper and
+unlimited lower level evaluations, $\alpha = \beta = 1 / 20$ and $s_{\min} = 1/100$.
+The  algorithm stopped when the accuracy ($1\times 10^{-4}$) or the MFEs was reached.
+As described before, each solution in the 2-population should be feasible, then
+ECA algorithm \cite{eca} is used to approximate feasible solution with $1000D_{LL}$
+as the maximum number of evaluations.\\
+
+Algorithm \ref{alg:QBCA} was compared against BLEAQ-II which is a state-of-the-art
+evolutionary algorithm for BO problems \cite{sinha2018review,sinha2013efficient}.
+BLEAQ-II solve the nested problem by using quadratic approximations of the
+$\Psi$-mapping which computes lower level solution based on a function of upper
+level variables. Moreover, BLEAQ-II showed competitive result since reduces the
+NFEs at lower level. Here, BLEAQ-II run with the parameters suggested by the
+authors \cite{sinha2018review,sinha2017bilevel} and the stop criteria was maintained
+however the desired accuracy was set at $1\times 10^{-4}$ as in QBCA.
+
+As we can see in Table \ref{tab:ll-comparative-vals}, QBCA outperforms to BLEAQ-II
+in terms of both objective functions when obtained the desired accuracy (at median)
+in five SMD problems. In terms of  objective function evaluations QBCA saved on
+average 24\% of NFEs at upper level in six test problems (see Table \ref{tab:ul-comparative-fes}).
+Also, BLEAQ-II outperforms to QBCA saving on average 68\% of function evaluations
+at lower level problem. Finally, Tables \ref{tab:ul-accur}-\ref{tab:ll-evals} 
+present some statistics in terms of accuracy and functions evaluations.
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[!ht]
+    \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent runs.}
+    \label{tab:ll-comparative-vals}
+    \centering
+    \begin{tabular}{|c|c|c||c|c|}
+%---------------------------------------------
+\hline
+& \multicolumn{2}{c||}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
+& QBCA & BLEAQ-II & QBCA & BLEAQ-II \\ \hline
+%---------------------------------------------
+SMD1 & \textbf{7.0279E-05}  &  9.91E-05 & \textbf{1.2053E-05} &          6.72E-05 \\ \hline
+SMD2 & \textbf{6.5342E-05}  &  2.82E-04 & \textbf{1.5472E-05} &          3.84E-04 \\ \hline
+SMD3 & 5.5641E-05    & \textbf{4.96E-06}&          1.3876E-05 & \textbf{6.26E-06} \\ \hline
+SMD4 & \textbf{5.0910E-05}  &  1.54E-04 & \textbf{1.3845E-05} &          6.12E-04 \\ \hline
+SMD5 & \textbf{6.7266E-05}  &  1.62E-04 & \textbf{1.1682E-05} &          3.08E-04 \\ \hline
+SMD6 & 1.2483E+01  &  \textbf{1.46E-13} &          6.2809E-05 & \textbf{8.66E-16} \\ \hline
+SMD7 & 1.0252E+00  &  \textbf{9.76E-02} &          3.7499E+02 & \textbf{1.25E+02} \\ \hline
+SMD8 & \textbf{7.8491E-05}  &           7.46E-03 & \textbf{2.1320E-05} &          5.63E-03 \\ \hline
+
+%---------------------------------------------
+    \end{tabular}
+\end{table}
+
+% -------------------------------------------------
+
+
+\begin{table}[!ht]
+    \caption{Median NFEs values by QBCA and BLEAQ-II obtained from 31 independent runs.}
+    \label{tab:ul-comparative-fes}
+    \centering
+    \begin{tabular}{|c|c|c||c|c|}
+%---------------------------------------------
+\hline
+& \multicolumn{2}{c||}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
+& QBCA & BLEAQ-II & QBCA & BLEAQ-II \\ \hline
+%---------------------------------------------
+SMD1 & \textbf{1553}  & 1600          &  305000 & \textbf{116088} \\ \hline
+SMD2 & \textbf{1525}  & 1925          &  308340 & \textbf{113504} \\ \hline
+SMD3 & \textbf{1580}  & 1630          &  416220 & \textbf{122542} \\ \hline
+SMD4 & \textbf{1401} & 1750  &  321590 & \textbf{70906} \\ \hline
+SMD5 & \textbf{1615}  & 3031          &  332840 & \textbf{147289} \\ \hline
+SMD6 & 1981 &  \textbf{1016} &   228590& \textbf{7055} \\ \hline
+SMD7 & 5011 &  \textbf{2104} & 716140  & \textbf{130195} \\ \hline
+SMD8 & \textbf{2432}  & 5569          &  483680 & \textbf{289886} \\ \hline
+%---------------------------------------------
+    \end{tabular}
+\end{table}
+
+
+\begin{table}[!ht]
+    \caption{Upper Level Accuracy obtained from 31 independent runs of QBCA.}
+    \label{tab:ul-accur}
+    \centering
+    \begin{tabular}{ccccc}
+        \hline
+        & Best &  Median  &  Worst &  Std. \\ \hline
+        SMD1 & 1.3247E-05 & 7.0279E-05 %& 2.1850E-04 
+        & 4.7632E-03 & 8.4390E-04 \\ \hline 
+        SMD2 & 6.7102E-06 & 6.5342E-05 %& 6.0071E-05 
+        & 9.9377E-05 & 2.8114E-05 \\ \hline 
+        SMD3 & 1.5002E-05 & 5.5641E-05 %& 5.7023E-05 
+        & 9.9667E-05 & 2.4343E-05 \\ \hline 
+        SMD4 & 7.1488E-06 & 5.0910E-05 %& 5.1723E-05 
+        & 9.5625E-05 & 2.4660E-05 \\ \hline 
+        SMD5 & 1.3112E-05 & 6.7266E-05 %& 6.1904E-02 
+        & 1.9170E+00 & 3.4429E-01 \\ \hline 
+        SMD6 & 1.2462E+01 & 1.2483E+01 %& 1.2480E+01 
+        & 1.2492E+01 & 7.9161E-03 \\ \hline 
+        SMD7 & 9.3416E-01 & 1.0252E+00 %& 1.8582E+00 
+        & 1.7670E+01 & 3.0556E+00 \\ \hline 
+        SMD8 & 3.5065E-05 & 7.8491E-05 %& 7.2548E-05 
+        & 9.9948E-05 & 1.8556E-05 \\ \hline 
+ 
+    \end{tabular}
+\end{table}
+% 
+\begin{table}[!ht]
+    \caption{Lower Level Accuracy obtained from 31 independent runs of QBCA.}
+    \label{tab:ll-accur}
+    \centering
+    \begin{tabular}{ccccc}
+        \hline
+        & Best &  Median  &  Worst &  Std. \\ \hline
+
+        SMD1 & 1.4531E-06 & 1.2053E-05 %& 2.4444E-05 
+        & 2.5890E-04 & 4.6808E-05 \\ \hline 
+        SMD2 & 1.2672E-06 & 1.5472E-05 %& 2.1763E-05 
+        & 8.5926E-05 & 2.1078E-05 \\ \hline 
+        SMD3 & 2.1643E-06 & 1.3876E-05 %& 1.6668E-05 
+        & 6.1028E-05 & 1.2625E-05 \\ \hline 
+        SMD4 & 8.7042E-08 & 1.3845E-05 %& 2.0255E-05 
+        & 8.4227E-05 & 2.1225E-05 \\ \hline 
+        SMD5 & 1.1723E-06 & 1.1682E-05 %& 7.5928E-04 
+        & 2.3115E-02 & 4.1491E-03 \\ \hline 
+        SMD6 & 2.6988E-06 & 6.2809E-05 %& 9.2298E-05 
+        & 4.0326E-04 & 8.6389E-05 \\ \hline 
+        SMD7 & 2.2602E+02 & 3.7499E+02 %& 3.6682E+02 
+        & 3.7500E+02 & 3.2090E+01 \\ \hline 
+        SMD8 & 6.5062E-06 & 2.1320E-05 %& 2.3710E-05 
+        & 4.6556E-05 & 1.2667E-05 \\ \hline 
+
+    \end{tabular}
+\end{table}
+
+
+\begin{table}[!ht]
+    \caption{Number of upper level evaluations obtained from 31 independent runs of QBCA.}
+    \label{tab:ul-evals}
+    \centering
+    \begin{tabular}{cccccc}
+        \hline
+        & Best &  Median &  Mean &  Worst &  Std. \\ \hline
+        SMD1 & 1221 & 1553 & 1559 & 2110 & 193.7 \\ \hline 
+        SMD2 & 1089 & 1525 & 1491 & 1755 & 148.3 \\ \hline 
+        SMD3 & 1262 & 1580 & 1584 & 1886 & 149.8 \\ \hline 
+        SMD4 & 876.0 & 1401 & 1382 & 2043 & 228.9 \\ \hline 
+        SMD5 & 421.0 & 1615 & 1577 & 1844 & 244.6 \\ \hline 
+        SMD6 & 1591 & 1981 & 1979 & 2461 & 172.3 \\ \hline 
+        SMD7 & 421.0 & 5011 & 4717 & 5011 & 1135 \\ \hline 
+        SMD8 & 2121 & 2432 & 2427 & 2836 & 186.8 \\ \hline 
+    \end{tabular}
+\end{table}
+
+
+
+\begin{table}[!ht]
+    \caption{Number of lower level evaluations obtained from 31 independent runs of QBCA.}
+    \label{tab:ll-evals}
+    \centering
+    \begin{tabular}{cccccc}
+        \hline
+        & Best &  Median &  Mean &  Worst &  Std. \\ \hline
+        SMD1 & 268900 & 305000 & 304840 & 334100 & 14795 \\ \hline 
+        SMD2 & 273440 & 308340 & 308750 & 346600 & 15158 \\ \hline 
+        SMD3 & 344980 & 416220 & 414850 & 488010 & 29549 \\ \hline 
+        SMD4 & 238550 & 321590 & 319820 & 434230 & 38909 \\ \hline 
+        SMD5 & 203310 & 332840 & 329110 & 358470 & 26756 \\ \hline 
+        SMD6 & 209510 & 228590 & 230070 & 257180 & 8781.3 \\ \hline 
+        SMD7 & 224570 & 716140 & 710090 & 1092100 & 160500 \\ \hline 
+        SMD8 & 440630 & 483680 & 484610 & 532170 & 23969 \\ \hline 
+    \end{tabular}
+\end{table}
+
+
+\section{Conclusions} % (fold)
+\label{sec:conclusions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this work, we propose a population based metaheuristics for the nested case 
+where a quasi-Newton method was used to handle unfeasible solutions as well as the 
+Tykhonov regularization for bilevel optimization. Some assumptions were made in order
+to integrate a physics-inspired metaheuristics based on the center of mass concept.
+The results showed that QBCA cab be competitive in some bilevel optimization problem.
+Although, when some assumptions about the follower objective function were made,
+QBCA was posed. Eight test problems were solved to assess the performance of the
+proposed algorithm in terms of upper/lower level accuracy and function evaluations
+compared against BLEAQ-II. Future research may also focus on utilizing some theorems
+about Tykhonov regularization (dynamic values for $\alpha$ and $\beta$) in order
+to ensure convergence, theoretically.
+
+
+More information (code, tutorials, etc.) about bilevel optimization can be found
+for free at our website \verb|https://bi-level.org|.
+% section conclusions (end)
+
+
+% section numerical_result (end)
+
+\bibliographystyle{plain}
+\bibliography{/home/jesus/Dropbox/escuela/conf/references,/home/jesus/Dropbox/escuela/conf/references-bilevel}
+
+\end{document}
