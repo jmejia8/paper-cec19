@@ -78,7 +78,7 @@ unconstrained, single and/or multi-objective, discrete and/or continuous
 structure, then BO can be useful to model them, e.g. a decision-making process,
 where a upper level authority (leader) optimizes their objectives restricted to
 optimal decisions/solutions given by a  lower level authority (follower)
-\cite{brotcorne2001bilevel,kalashnikov2010comparison,sinha2015transportation,von1945theory,wang2014bilevel}.\\
+\cite{brotcorne2001bilevel,kalashnikov2010comparison,sinha2015transportation,von1945theory,wang2014bilevel}.
 
 %--------------------------------------------------
 %--------------------------------------------------
@@ -104,14 +104,16 @@ allowable values for $\vec{x}$.\\
 
 Now, we are able to define a general BO problem with
 single-objective functions at both levels
-\cite{bard2013practical,dempe2002foundations}.%\\
+\cite{bard2013practical,dempe2002foundations}.
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=0.9\linewidth]{img/bilevel.pdf}
-    \caption{Diagram of a bilevel optimization problem. Here, $y^*$ 
-            is defined as in Eq. \ref{eqn:y-arg}. Moreover, $(x,\ y^*)$
-            represents a feasible solution.}
+    \caption{ Diagram of a bilevel optimization problem. In step 1, a vector of %
+              upper level parameters $x$ is selected; the problem $\min_{y\in Y} %
+              f(x, y)$ is solved in step 2; consequently in step 3, we can evaluate %
+              the feasible solution $(x,\ y^*)$ at the upper level objective function. %
+            }
     \label{fig:bilevel}
 \end{figure}
 % 
@@ -121,7 +123,7 @@ single-objective functions at both levels
     problem if the the upper-level/leader's objective function
     $F: X \times Y \to \mathbb{R}$ and the lower-level/follower's objective
     function $f: X \times Y \to \mathbb{R}$. Then, the optimization process is
-    formulated as follows:\\
+    formulated as follows:
     % 
     % 
     \noindent
@@ -181,7 +183,7 @@ optimization problem by adding penalty factors to control the degree of penaliza
 This strategy is often hard to calibrate, particularly for large-scale problems.
 Nevertheless, it is simple to understand and also easy to apply \cite{savard1994steepest,white1993penalty}.
 Finally, it has been noted that the issue of non-unique optimal lower level
-solutions has not been explored in this type of approaches.\\
+solutions has not been explored in this type of approaches.
 
 As mentioned above, among population-based metaheuristics for BO problems, most
 research efforts are focused on swarm intelligence and evolutionary algorithms.
@@ -192,7 +194,7 @@ particularly in the lower level of the BO problem. In contrast, the combination
 of population-based metaheuristics with mathematical programming methods may
 provide, considering some assumptions, efficient and accurate approaches where
 their computational cost can be reduced \cite{sinha2013efficient,wang2005evolutionary}.
-Furthermore, to the best of the authors's knowledge, Tykhonov Regularization has
+Furthermore, to the best of the authors' knowledge, Tykhonov Regularization has
 not been incorporated in this type of algorithms. 
 
 This is the main motivation of this research work, which uses the Tykhonov
@@ -220,8 +222,7 @@ the future work.
 \label{sec:qca}
 
 As a first step in the explanation of the proposed approach we define a
-Two-population for Bilevel Optimization (BO). Note that we are assuming, without
-loss of generalization,  a maximization process.
+Two-population for Bilevel Optimization (BO).
 
 \begin{definition}
     \label{def:pop2}
@@ -230,18 +231,14 @@ loss of generalization,  a maximization process.
     % 
     $$
         P = \{  (\vec{x}_i, \ \vec{y}_i) \in X \times Y \ : \
-                \vec{x}_i \in P_X, \ \vec{y}_i \in P_Y, \ i=1,\ldots,N
-            \}
-    $$
-     
-     
-    where $P_X \subset X$ and $P_Y \subset Y$ with $|P_X| = |P_Y| = N$.
+                \vec{x}_i \in X, \ \vec{y}_i \in Y, \ i=1,\ldots,N
+            \}.
+    $$     
 \end{definition}
  
-In Definition \ref{def:pop2}, each $\vec{x}_i \in P_X$ in a 2-population has a
-corresponding $\vec{y}_i \in P_Y$ which is an approximation of a feasible solution,
+In Definition \ref{def:pop2}, each $\vec{x}_i \in X$ in a Two-population has a
+corresponding $\vec{y}_i \in Y$ which is an approximation of a feasible solution,
 i.e., $(\vec{x}_i, \ \vec{y}_j)$ for $i \neq j$ is  not a valid solution.
- 
 
 \subsection{Tykhonov regularization}
 Regularization for a BO problem is used to handle problems with nonunique lower
@@ -267,7 +264,7 @@ perturbation of a bilevel optimization problem where the lower level problem has
 not a unique optimal solution but the upper level objective function $F$ is 
 strongly convex, then the problem in Eq. \ref{eqn:relaxed}:
 \begin{equation}
-    \min_x \{ f(\vec{x},\vec{y}) + \alpha F(\vec{x}, \vec{y}) : g_j(\vec{x}, \vec{y}), j=1,2,\ldots, J\} 
+    \min_{x \in X} \{ f(\vec{x},\vec{y}) + \alpha F(\vec{x}, \vec{y}) : g_j(\vec{x}, \vec{y}), j=1,2,\ldots, J\} 
     \label{eqn:relaxed}
 \end{equation}
 % 
@@ -286,12 +283,23 @@ is small enough.
 \subsection{The center of mass operator} % (fold)
 \label{sub:the_center_operator}
 % 
+
 A variation operator inspired in the center of mass and presented in \cite{Mejia2018}
-is used for the population-based search at both levels of the BO problem. Such
-operator is defined in Eq. \ref{eqn:centerX}:
+is used for the population-based search at both levels of the BO problem. In order
+to compute the center of mass in a minimization problem, we suggest the following
+strategy:
+% 
+\[
+    m_F(\vec{x}, \vec{y}) = \left[ \max_{(\vec{x}, \vec{y})\in U} |\varphi_F (\vec{x}, \vec{y}; \beta)| \right]
+                            - \varphi_F (\vec{x}, \vec{y}; \beta).
+\]
+
+If both levels are maximization problems with no-negative objective functions
+(ECA assumptions \cite{Mejia2018}), then $m_F(\vec{x}, \vec{y}) = \varphi_F (\vec{x}, \vec{y}; \beta)$.
+Hence, such operator is defined in Eq. \ref{eqn:centerX}:
 % 
 \begin{equation}
-    \vec{c}_X = \sum_{(\vec{x}, \vec{y})\in U} \varphi_F(\vec{x},\ \vec{y}; \ \beta) \cdot \vec{x}
+    \vec{c}_X = \sum_{(\vec{x}, \vec{y})\in U} m_F(\vec{x},\ \vec{y}) \cdot \vec{x},
     \label{eqn:centerX}
 \end{equation}
 % 
@@ -309,9 +317,9 @@ in Eq. \ref{eqn:leaderp}:
     \label{eqn:leaderp}
 \end{equation}
 % 
-where $\eta_{X}$ is the user-defined stepsize and  
+where $\eta_{X} \in (0, \eta_{\max}]$ and $\eta_{\max}$ is the user-defined stepsize and  
 $
-    (\vec{u}_{\text{worst}}, \vec{y}) \in \arg \min \{\varphi_F(\vec{x}, \vec{y} )  \ : \ (\vec{x}, \vec{y}) \in U \} 
+    (\vec{u}_{\text{worst}}, \vec{y}) \in \arg \max \{\varphi_F(\vec{x}, \vec{y} )  \ : \ (\vec{x}, \vec{y}) \in U \} 
 $ %
 % 
 and this new direction $\vec{p}$ will be called \textit{current-to-center} direction. %
@@ -319,26 +327,38 @@ On the the other hand, the center of mass for the lower level is defined on
 $V \subset P$ in Eq. \ref{eqn:centerY}:
 % 
 \begin{equation}
-    \vec{c}_Y = \sum_{(\vec{x}, \vec{y})\in V} \varphi_f(\vec{x},\ \vec{y};\ \alpha) \cdot \vec{y}.
+    \vec{c}_Y = \sum_{(\vec{x}, \vec{y})\in V} m_f(\vec{x},\ \vec{y}) \cdot \vec{y},
     \label{eqn:centerY}
 \end{equation}
+% 
+where $m_f(\vec{x}, \vec{y}) = \varphi_f(\vec{x}, \vec{y}; \alpha )$ if ECA assumptions
+are satisfied, otherwise the mass is computed as follows:
+% 
+\[
+    m_f(\vec{x}, \vec{y}) =
+        \left[ \max_{(\vec{x}, \vec{y})\in U} |\varphi_f (\vec{x}, \vec{y}; \alpha)| \right]
+        - \varphi_f (\vec{x}, \vec{y}; \alpha)
+\]
 % 
 It can be shown that $\vec{c}_Y$ is biased toward smaller values of the relaxed
 problem stated in Eq. \ref{eqn:relaxed} for small positive values of $\alpha$.
 % 
 The new direction $\vec{y}_c$ should be close to a feasible solution and biased
-to the center of mass. Thus, it is necessary to ensure that letting $(\vec{x}, \vec{y}_{\text{nearest}}) $
-be in $P$ such that $\vec{x}$ is close enough to $\vec{p}$, i.e., $ \| \vec{x} - \vec{p} \| = \min\{ \| \vec{x} - \vec{p} \| \ : \ (\vec{x}, \vec{y}) \in P  \} $.
+to the center of mass. Thus, it is necessary to ensure that letting
+$(\vec{x}_\text{nearest}, \vec{y}_{\text{nearest}}) $ be in $P$ such that $\vec{x}$
+is close enough to $\vec{p}$ in terms of euclidean norm, i.e.,
+$ \| \vec{x}_{\text{nearest}} - \vec{p} \| = \min\{ \| \vec{x} - \vec{p} \| \ : \ (\vec{x}, \vec{y}) \in P  \} $.
 Therefore,
+% 
 \begin{equation}
     \vec{y}_c = \vec{y}_{\text{nearest}} + \eta_{Y} \dfrac{\vec{c}_Y - \vec{v}_{\text{worst}}}{\| \vec{c}_Y - \vec{v}_{\text{worst}} \|},
     \label{eqn:yc}
 \end{equation} %
 % 
-where $\eta_Y$, a user-defined parameter, takes small positive values and 
+where $\eta_Y$ takes small positive values and 
 % 
 $
-    (\vec{x}, \vec{v}_{\text{worst}}) \in \arg \min \{\varphi_f(\vec{x}, \vec{y} )  \ : \ (\vec{x}, \vec{y}) \in V \}
+    (\vec{x}, \vec{v}_{\text{worst}}) \in \arg \max \{\varphi_f(\vec{x}, \vec{y} )  \ : \ (\vec{x}, \vec{y}) \in V \}
 $. Note that Eq. \ref{eqn:yc} generates follower's parameters close to a feasible
 solution when $\eta_{Y}$ is small enough and $f$ is stable (Lipschitz continuous)
 around $\vec{y} \in \Psi(\vec{x}) $ for  $\vec{x} \in X$ (see \cite{dempe2002foundations}). %\\
@@ -400,8 +420,66 @@ smooth in a point the algorithm should be stopped.
 We adapted a popular quasi-Newton method known as Broyden-Fletcher-Goldfarb-Shanno
 algorithm (BFGS) \cite{fletcher2013practical} in order to handle unfeasible
 solutions $(\vec{p}, \vec{y}_c)$ for bilevel optimization. Such adaptation is
-described in Algorithm \ref{alg:BFGS-LL}. \\
+described in Algorithm \ref{alg:BFGS-LL}.
 % 
+
+\subsection{Initial Population} % (fold)
+\label{sub:initial_population}
+
+% subsection initial_population (end)
+\textcolor{black}{
+The QBCA method should start with a population where each solution  should
+be feasible, then the ECA algorithm \cite{Mejia2018} is used to approximate feasible
+solution with limited number of evaluations at lower level.
+} The initial population is constructed as follows:
+
+\begin{enumerate}
+    \item Set $P = \emptyset $.
+    \item Generate $N$ vector of parameters $\vec{x}_1, \vec{x}_2, \ldots, \vec{x}_N$
+          uniformly at random at upper level.
+    \item For each $i=1,\ 2,\ \ldots,N$ compute
+            $\vec{y}_i \in \arg \min \{ f(\vec{x}_i, \vec{z}) : \vec{z} \in Y \}$
+          by using ECA to approximate a global solution.
+    \item Put $\vec{y}_c = \vec{y}_i$ and $\vec{p} = \vec{x}_i$ and apply the
+          Algorithm \ref{alg:BFGS-LL} to improve the solution accuracy.
+    \item Insert the improved solution $(\vec{x}_i, \vec{y}_i)$ in $P$.
+\end{enumerate}
+
+\subsection{Comparing Solutions} % (fold)
+\label{sub:comparing_solutions}
+
+Two solutions are compared in terms of the Tykhonov regularization $\varphi_f$
+to prefer feasible solutions instead of minimum $F$ values in the relaxed problem
+in Eq. \ref{eqn:relaxed}. That is derived from the Theorem 7.16 in \cite{dempe2002foundations}
+when its hypothesis are satisfied the following fact is obtained:
+% 
+\[
+    \lim_{\alpha \to 0+} \vec{x}_\alpha = \arg \min_{\vec{y} \in \Psi(\vec{x})} F(\vec{x}, \vec{y}),
+\]
+%
+where $\vec{x}_\alpha = \arg \min\{\varphi_f (\vec{x},\ \vec{y}; \alpha) : \vec{y} \in Y\} $.
+Moreover, for each $\alpha > 0$, the following result is obtained:
+% 
+\begin{align}
+    \label{eqn:Fbound}
+    F(\vec{x}_\alpha, \vec{y}) &\leq \min_{ \vec{x} \in X} \{ F(\vec{x}, \vec{y}) : \vec{y} \in \Psi(\vec{x}) \} \\
+    \label{eqn:fbound}
+    \min_{\vec{y} \in Y } f(\vec{x}, \vec{y}) &\leq f(\vec{x}_\alpha, \vec{y}^*).
+\end{align}
+% 
+That provides some interesting facts when solutions are compared using $F$ or $f$,
+i.e.,  Eq. \ref{eqn:Fbound} means that if we compare solutions only using the
+function $F$ our proposal can prefer best values of $F$ instead feasible solutions.
+On the other hand, Eq. \ref{eqn:fbound} means that feasible solutions will be
+preferred when two solutions are compared only in  terms of $f$. Thus, it is
+necessary compare solutions using both objective functions, and we use the Tykhonov
+regularization $\varphi_f$ when the optimal values are unknown.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+% subsection evaluating_solutions (end)
 
 \subsection{Complete algorithm}
 
@@ -409,8 +487,7 @@ Now, we can summarize our proposal QBCA to approximate a solution for a given bi
 optimization problem: First, a Two-population $P \in X \times Y$ of size $N$ is
 generated at random with uniform distribution, and for each solution $(\vec{x}, \vec{y})$
 in $P$ where $\vec{y} \in \arg \min_{\vec{x}\in Y} \{ f(\vec{x},\vec{z})\}$
-is computed by applying the algorithm described in Sections \ref{sub:the_center_operator}
-and \ref{sub:nonsmooth_optimization_via_bfgs}, inspired in\cite{Mejia2018}. 
+is computed by applying the algorithm described in Sections \ref{sub:initial_population}, inspired in\cite{Mejia2018}. 
 
 After that, the $k$ elements in $U, V \in X\times Y$ are generated at random with
 uniform distribution. With both sets $U$ and $V$ available, $\vec{p}$ and $\vec{y}_c$
@@ -433,19 +510,20 @@ $n$ is the number of new solutions added to $P$.
     \caption{QBCA pseudocode}
     \label{alg:QBCA}
     \begin{algorithmic}[1]
-        \STATE Choose $k$, $\eta_{X}$, $\eta_{Y}$.
+        \STATE Choose $k$, $\eta_{\max}$.
         \STATE $N \gets k * D$
-        \STATE Initialize a 2-population $P\subset X\times Y$ with $N$ elements
+        \STATE Initialize a Two-population $P\subset X\times Y$ with $N$ elements
         \WHILE{the end criterion is not achieved}
             \FOR {each $(\vec{x},\; \vec{y})$ in $P$}
                 \STATE Generate $U \subset P$ and $V \subset P$ with $|U| = |V| = k$
+                \STATE Choose $\eta_{X}$ and $\eta_{Y}$
                 \STATE Compute $\vec{c_X}$ using $U$ with Eq. (\ref{eqn:centerX})
                 \STATE Calculate $\vec{c_Y}$ using $V$ with Eq. (\ref{eqn:centerY})
                 \STATE $ \vec{p} \gets \vec{x} + \eta_{X} (\vec{c}_X - \vec{u}_{\text{worst}})$
                 \STATE Compute $ \vec{y}_c $ by using Eq. \ref{eqn:yc}
                 \STATE $ \vec{q} $ is calculated using $\vec{y}_c$ and the Algorithm \ref{alg:BFGS-LL}
                 
-                \IF{$ \varphi_f (\vec{x},\ \vec{y}) < \varphi_f (\vec{p},\ \vec{q})  $}
+                \IF{$ \varphi_f (\vec{p},\ \vec{q}) < \varphi_f (\vec{x},\ \vec{y})  $}
                     \STATE Replace worst element in $P$ with $(\vec{p},\ \vec{q})$.
                 \ENDIF
             \ENDFOR
@@ -460,17 +538,24 @@ $n$ is the number of new solutions added to $P$.
 
 QBCA was implemented in the Julia Language \cite{bezanson2017julia} and it was
 tested using the 10-dimensional SMD problems ($D = D_{UL} = D_{LL} = 5$)
-\cite{sinha2014test,sinha2013efficient}. The parameters adopted after preliminary
-experiments were $k = 3$, $\eta_{X} \in (0, 2]$, $\eta_{Y} \in (0, 1/2]$ uniformly
+\cite{sinha2014test,sinha2013efficient}. The first eight SMD test problems were
+proposed in order to offer controlled scalability of difficulties at both levels.
+Also, the optimal solutions are given for each problem. The principal properties
+of SMD test problems are identified and we enumerate some of the most important:
+
+\begin{itemize}
+    \item Multi-modality at upper level (SMD7 and SMD8).
+    \item Multi-modality at lower level (SMD3-SMD5 and SMD8).
+    \item Multiple global solutions (SMD6).
+\end{itemize}
+
+The parameters adopted after preliminary
+experiments were $k = 3$, $\eta_{X} \in (0, \eta_{\max}]$, $\eta_{Y} \in (0, 1/\eta_{\max}]$ uniformly
 at random and the maximum number of functions evaluations (MFEs) was $1000D_{UL}=5,000$
 for the upper and unlimited lower level evaluations, $\alpha = \beta = 1 / 20$
 and $s_{\min} = 1/100$. The  algorithm stopped when the accuracy ($1\times 10^{-4}$)
 or the MFEs was reached.
 
-
-\textcolor{red}{As described before, each solution in the Two-population should
-be feasible, then ECA algorithm \cite{Mejia2018} is used to approximate feasible
-solution with $1000D_{LL}$ as the maximum number of evaluations}.
 
 QBCA (Algorithm \ref{alg:QBCA}) was compared against BLEAQ-II, which is a state-of-the-art
 evolutionary algorithm for BO problems \cite{sinha2018review,sinha2013efficient}.
@@ -485,7 +570,7 @@ QBCA, to promote a fair comparison.
 Three experiments were carried out:
 % 
 \begin{enumerate}
-    \item The analysis of the QBCA statistical results based on accurary in both,
+    \item The analysis of the QBCA statistical results based on accuracy in both,
           upper and lower levels.
     \item The analysis of the QBCA statistical results based on NFEs in both,
           upper and lower levels. 
@@ -493,6 +578,7 @@ Three experiments were carried out:
           NFEs, in both levels as well.
 \end{enumerate}
 % 
+
 
 \subsection{Experiment 1}
 Tables \ref{tab:ul-accur} and \ref{tab:ll-accur} include the statistical results
@@ -615,16 +701,20 @@ problems. Based on the same Table \ref{tab:ul-comparative-fes}, BLEAQ-II clearly
 required less evaluations in the lower level with respect to the NFEs used by
 QBCA (around 68\% less NFEs). 
 
+Also, results suggest that Tykhonov regularization was useful to generate and
+successfully compare solutions most of the time. However, in problems SMD6 and
+SMD7 this strategy can be improved.
+
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{table}[!ht]
     \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent runs.}
     \label{tab:ll-comparative-vals}
     \centering
-    \begin{tabular}{|c|c|c||c|c|}
+    \begin{tabular}{|c|c|c|c|c|}
 %---------------------------------------------
 \hline
-& \multicolumn{2}{c||}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
+& \multicolumn{2}{c|}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
 & QBCA & BLEAQ-II & QBCA & BLEAQ-II \\ \hline
 %---------------------------------------------
 SMD1 & \textbf{7.0279E-05}  &  9.91E-05 & \textbf{1.2053E-05} &          6.72E-05 \\ \hline
@@ -647,10 +737,10 @@ SMD8 & \textbf{7.8491E-05}  &           7.46E-03 & \textbf{2.1320E-05} &        
     \caption{Median NFEs values by QBCA and BLEAQ-II obtained from 31 independent runs.}
     \label{tab:ul-comparative-fes}
     \centering
-    \begin{tabular}{|c|c|c||c|c|}
+    \begin{tabular}{|c|c|c|c|c|}
 %---------------------------------------------
 \hline
-& \multicolumn{2}{c||}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
+& \multicolumn{2}{c|}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
 & QBCA & BLEAQ-II & QBCA & BLEAQ-II \\ \hline
 %---------------------------------------------
 SMD1 & \textbf{1553}  & 1600          &  305000 & \textbf{116088} \\ \hline
@@ -678,7 +768,7 @@ SMD8 & \textbf{2432}  & 5569          &  483680 & \textbf{289886} \\ \hline
 We proposed a population-based metaheuristic for the nested case to solve bilevel
 optimization problems. Tykhonov regularization was used to deal with multiple
 optimal solutions at the lower level; the upper and lower level searches were
-carried out by using a variation operator inspired inthe center of mass, while
+carried out by using a variation operator inspired in the center of mass, while
 the lower level search was assisted by a quasi-Newton method to handle unfeasible
 solutions. Some assumptions were made in order to integrate this physics-inspired
 metaheuristic operator with the quasi-Newton method and a problem relaxation.
@@ -711,7 +801,7 @@ project No. 220522.
 
 
 
-\bibliographystyle{plain}
-\bibliography{/home/jesus/Dropbox/escuela/conf/references,/home/jesus/Dropbox/escuela/conf/references-bilevel}
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,/home/jesus/Dropbox/escuela/conf/references,/home/jesus/Dropbox/escuela/conf/references-bilevel}
 
 \end{document}
