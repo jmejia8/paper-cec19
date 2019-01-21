@@ -31,13 +31,13 @@
 
 \title{A Metaheuristic for Bilevel Optimization Using Tykhonov Regularization and the Quasi-Newton Method}
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Jes\'us-Adolfo Mej\'ia-de-Dios}
+\author{\IEEEauthorblockN{Jes\'us-Adolfo Mej\'ia-de-Dios}
 \IEEEauthorblockA{\textit{Artificial Intelligence Research Center} \\
 \textit{University of Veracruz}\\
 Xalapa, Veracruz, Mexico \\
 jesusmejded@gmail.com}
 \and
-\IEEEauthorblockN{2\textsuperscript{nd} Efr\'en Mezura-Montes}
+\IEEEauthorblockN{Efr\'en Mezura-Montes}
 \IEEEauthorblockA{\textit{Artificial Intelligence Research Center} \\
 \textit{University of Veracruz}\\
 Xalapa, Veracruz, Mexico \\
@@ -106,7 +106,7 @@ Now, we are able to define a general BO problem with
 single-objective functions at both levels
 \cite{bard2013practical,dempe2002foundations}.
 
-\begin{figure}[!ht]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.9\linewidth]{img/bilevel.pdf}
     \caption{ Diagram of a bilevel optimization problem. In step 1, a vector of %
@@ -294,7 +294,7 @@ strategy:
                             - \varphi_F (\vec{x}, \vec{y}; \beta).
 \]
 
-If both levels are maximization problems with no-negative objective functions
+If both levels there are maximization problems with non-negative objective functions
 (ECA assumptions \cite{Mejia2018}), then $m_F(\vec{x}, \vec{y}) = \varphi_F (\vec{x}, \vec{y}; \beta)$.
 Hence, such operator is defined in Eq. \ref{eqn:centerX}:
 % 
@@ -365,7 +365,7 @@ around $\vec{y} \in \Psi(\vec{x}) $ for  $\vec{x} \in X$ (see \cite{dempe2002fou
 % 
 
 % 
-\begin{figure}[!ht]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.95\linewidth]{img/x-and-y.pdf}
     \caption{QBCA procedure scheme.}
@@ -373,7 +373,7 @@ around $\vec{y} \in \Psi(\vec{x}) $ for  $\vec{x} \in X$ (see \cite{dempe2002fou
 \end{figure}
 % 
 The strategy detailed above can be useful to approximate solution for a BO problem
-when each solution in  $P$ is feasible and $\eta_{Y}$ is small enough, however
+when each solution in  $P$ is feasible and $\eta_{Y}$ is small enough. However,
 the new solution $(\vec{p},\ \vec{y}_c)$ could be infeasible. The next section
 is focused on moving $(\vec{p},\ \vec{y}_c)$ close to the feasible region
 (see Fig. \ref{fig:qca}).
@@ -392,7 +392,7 @@ are widely used for numerical optimization when the objective function is smooth
 evaluations (in practice, gradient approximation). In theory, when $f$ is not
 smooth in a point the algorithm should be stopped. 
 
-\begin{algorithm}[!ht]
+\begin{algorithm}[htbp]
     \caption{BFGS-LL: Quasi-Newton method for the lower level problem.}
     \label{alg:BFGS-LL}
     \begin{algorithmic}[1]
@@ -427,11 +427,11 @@ described in Algorithm \ref{alg:BFGS-LL}.
 \label{sub:initial_population}
 
 % subsection initial_population (end)
-\textcolor{black}{
-The QBCA method should start with a population where each solution  should
-be feasible, then the ECA algorithm \cite{Mejia2018} is used to approximate feasible
-solution with limited number of evaluations at lower level.
-} The initial population is constructed as follows:
+
+The QBCA method should start with a feasible initial population, then the ECA
+algorithm \cite{Mejia2018} is used to approximate feasible solution with a limited
+number of evaluations at the lower level. The initial population is constructed
+as follows:
 
 \begin{enumerate}
     \item Set $P = \emptyset $.
@@ -450,8 +450,8 @@ solution with limited number of evaluations at lower level.
 
 Two solutions are compared in terms of the Tykhonov regularization $\varphi_f$
 to prefer feasible solutions instead of minimum $F$ values in the relaxed problem
-in Eq. \ref{eqn:relaxed}. That is derived from the Theorem 7.16 in \cite{dempe2002foundations}
-when its hypothesis are satisfied the following fact is obtained:
+in Eq. \ref{eqn:relaxed}. That is derived from Theorem 7.16 in \cite{dempe2002foundations}
+where if its hypotheses are satisfied the following fact is obtained:
 % 
 \[
     \lim_{\alpha \to 0+} \vec{x}_\alpha = \arg \min_{\vec{y} \in \Psi(\vec{x})} F(\vec{x}, \vec{y}),
@@ -487,7 +487,8 @@ Now, we can summarize our proposal QBCA to approximate a solution for a given bi
 optimization problem: First, a Two-population $P \in X \times Y$ of size $N$ is
 generated at random with uniform distribution, and for each solution $(\vec{x}, \vec{y})$
 in $P$ where $\vec{y} \in \arg \min_{\vec{x}\in Y} \{ f(\vec{x},\vec{z})\}$
-is computed by applying the algorithm described in Sections \ref{sub:initial_population}, inspired in\cite{Mejia2018}. 
+is computed by applying the algorithm described in Sections \ref{sub:initial_population},
+inspired in\cite{Mejia2018}. 
 
 After that, the $k$ elements in $U, V \in X\times Y$ are generated at random with
 uniform distribution. With both sets $U$ and $V$ available, $\vec{p}$ and $\vec{y}_c$
@@ -502,11 +503,12 @@ one is indeed better than its parent solution $(\vec{x}, \vec{y})$. The algorith
 stops either when the maximum number of evaluations for the upper level is reached
 or the desired accuracy is met or a selection ratio $s$ is smaller than a constant
 $s_{\min}$. Here, the selection ratio is computed as follows: $ s = n /N$ where
-$n$ is the number of new solutions added to $P$.
+$n$ is the number of new solutions added to $P$. The complete approach is presented in 
+Algorithm \ref{alg:QBCA}.
 
 
 
-\begin{algorithm}[!ht]
+\begin{algorithm}[htbp]
     \caption{QBCA pseudocode}
     \label{alg:QBCA}
     \begin{algorithmic}[1]
@@ -550,11 +552,11 @@ of SMD test problems are identified and we enumerate some of the most important:
 \end{itemize}
 
 The parameters adopted after preliminary
-experiments were $k = 3$, $\eta_{X} \in (0, \eta_{\max}]$, $\eta_{Y} \in (0, 1/\eta_{\max}]$ uniformly
-at random and the maximum number of functions evaluations (MFEs) was $1000D_{UL}=5,000$
-for the upper and unlimited lower level evaluations, $\alpha = \beta = 1 / 20$
-and $s_{\min} = 1/100$. The  algorithm stopped when the accuracy ($1\times 10^{-4}$)
-or the MFEs was reached.
+experiments were $k = 3$, $\eta_{X} \in (0, \eta_{\max}]$, $\eta_{Y} \in (0, 1/\eta_{\max}]$
+uniformly at random and the maximum number of functions evaluations (MFEs) was
+$1000D_{UL}=5,000$ for the upper and unlimited lower level evaluations,
+$\alpha = \beta = 1 / 20$ and $s_{\min} = 1/100$. The  algorithm stopped either
+when the accuracy ($1\times 10^{-4}$) was obtained or the MFEs was reached.
 
 
 QBCA (Algorithm \ref{alg:QBCA}) was compared against BLEAQ-II, which is a state-of-the-art
@@ -587,7 +589,7 @@ It can be noted that QBCA provides good accuracy values in most test problems
 and it is also robust in such behavior, mainly based in the standard deviation
 values reported. 
 
-\begin{table}[!ht]
+\begin{table}[htbp]
     \caption{Upper Level Accuracy obtained from 31 independent runs by QBCA.}
     \label{tab:ul-accur}
     \centering
@@ -614,7 +616,7 @@ values reported.
     \end{tabular}
 \end{table}
 % 
-\begin{table}[!ht]
+\begin{table}[htbp]
     \caption{Lower Level Accuracy obtained from 31 independent runs by QBCA.}
     \label{tab:ll-accur}
     \centering
@@ -650,7 +652,7 @@ observed in the evaluations used in the upper level (Table \ref{tab:ul-evals})
 was robust. In contrast, more variability was observed in the lower level
 (Table \ref{tab:ll-evals}). 
 
-\begin{table}[!ht]
+\begin{table}[htbp]
     \caption{Number of upper level evaluations obtained from 31 independent runs by QBCA.}
     \label{tab:ul-evals}
     \centering
@@ -670,7 +672,7 @@ was robust. In contrast, more variability was observed in the lower level
 
 
 
-\begin{table}[!ht]
+\begin{table}[htbp]
     \caption{Number of lower level evaluations obtained from 31 independent runs by QBCA.}
     \label{tab:ll-evals}
     \centering
@@ -696,18 +698,19 @@ values, and BLEAQ-II was better in the remaining three SMD test problems.
 
 In terms of objective function evaluations, and based in Table \ref{tab:ul-comparative-fes},
 it is interesting to note that QBCA saved, on average, 24\% of NFEs at the upper
-level in six test problems. BLEAQ-II outperformed QBCA in two remaining test
+level in six test problems. BLEAQ-II outperformed QBCA in the two remaining test
 problems. Based on the same Table \ref{tab:ul-comparative-fes}, BLEAQ-II clearly
 required less evaluations in the lower level with respect to the NFEs used by
 QBCA (around 68\% less NFEs). 
 
-Also, results suggest that Tykhonov regularization was useful to generate and
-successfully compare solutions most of the time. However, in problems SMD6 and
-SMD7 this strategy can be improved.
+Furthermore, the overall results suggest that Tykhonov regularization was useful
+to generate competitive results for BO problems. However, in test problems SMD6
+(multiple global solutions) and SMD7 (multi-modality at the upper level), this
+strategy can be improved.
 
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{table}[!ht]
+\begin{table}[t]
     \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent runs.}
     \label{tab:ll-comparative-vals}
     \centering
@@ -733,7 +736,7 @@ SMD8 & \textbf{7.8491E-05}  &           7.46E-03 & \textbf{2.1320E-05} &        
 % -------------------------------------------------
 
 
-\begin{table}[!ht]
+\begin{table}[t]
     \caption{Median NFEs values by QBCA and BLEAQ-II obtained from 31 independent runs.}
     \label{tab:ul-comparative-fes}
     \centering
