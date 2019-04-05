@@ -542,8 +542,7 @@ Algorithm \ref{alg:QBCA}.
 \label{sec:numerical_result}
 
 QBCA was implemented in the Julia Programing Language \cite{bezanson2017julia}
-and it was tested using both 5-dimensional ($D = D_{UL} = 2 $ $ D_{LL} = 3$) and
-10-dimensional SMD problems ($D = D_{UL} = D_{LL} = 5$)
+and it was tested using the scalable SMD test suite
 \cite{sinha2014test,sinha2013efficient}. The first eight SMD test problems were
 proposed in order to offer controlled scalability of difficulties at both levels.
 Also, the optimal solutions are given for each problem. The principal properties
@@ -555,17 +554,19 @@ of SMD test problems are identified and we enumerate some of the most important:
     \item Multiple global solutions (SMD6).
 \end{itemize}
 
+Here, we use both, low and high-dimensional versions of the SMD test suite. The low-dimensional problems consists of 5 variables where $D_{ul} = 2$ and $D_{ll}  = 3$. The high dimensional SMD instances of 10 variables where $D_{ul} = 5$ and $D_{ll}  = 5$. The description for SMD test suite can be found in \cite{sinha2014test}.
+
+
 The parameters adopted after preliminary
-experiments were $k = 3$ (fixed), $\eta_{X} \in (0, \eta_{\max}]$ and $\eta_{Y} \in (0, 1/\eta_{\max}]$ are randomly chosen uniformly at random.
+experiments were $k = 3$, the stepsize parameters $\eta_{X} \in (0, \eta_{\max}]$ and $\eta_{Y} \in (0, 1/\eta_{\max}]$ (randomly chosen with uniform distribution). Also,
 $\alpha = \beta = 1 / 20$ and $s_{\min} = 1/100$. 
-
-% 
-The maximum number of functions evaluations (MFEs) was $1000D_{UL}=5,000$ for the
-upper and unlimited lower level evaluations.
-% 
-
 The  algorithm stopped either
-when the accuracy ($1\times 10^{-4}$) was obtained or the MFEs was reached.
+when the accuracy ($1\times 10^{-4}$) was obtained or the maximum number of functions evaluations (MFEs) for the upper level was reached.
+% 
+% 
+The MFEs was $1000D_{UL}$ for the upper and unlimited lower level evaluations were provided.
+% 
+
 
 % 
 QBCA (Algorithm \ref{alg:QBCA}) was compared against BLEAQ-II, which is a state-of-the-art
@@ -578,7 +579,7 @@ the authors in \cite{sinha2018review,sinha2017bilevel} and the stop criterion wa
 maintained.  However, the desired accuracy was set at $1\times 10^{-4}$, as in
 QBCA, to promote a fair comparison.
 
-Three experiments were carried out:
+Three experiments were carried out for low and high-dimensional instances:
 % 
 \begin{enumerate}
     \item The analysis of the QBCA statistical results based on accuracy in both,
@@ -587,26 +588,78 @@ Three experiments were carried out:
           upper and lower levels. 
     \item A comparison against BLEAQ-II considering both criteria, accuracy and
           NFEs, in both levels as well.
+    \item  The QBCA convergence analysis.
 \end{enumerate}
 % 
 
 
 \subsection{Experiment 1}
 
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=\linewidth]{img/SMD_2_3.pdf}
-    \caption{Convergence plot for median upper level function value obtained from 31 independent runs of QBCA on SMD1-SMD5 and SMD8 problems with $D_{ul} = 2 $ and $ D_{ll} = 3$. Log scale is used for visualization purposes.}
-\end{figure*}
-
-Tables \ref{tab:ul-accur} and \ref{tab:ll-accur} include the statistical results
+Tables \ref{tab:ul-accur-5}-\ref{tab:ll-accur} include the statistical results
 obtained by QBCA regarding accuracy in the upper and lower level, respectively.
 It can be noted that QBCA provides good accuracy values in most test problems
 and it is also robust in such behavior, mainly based in the standard deviation
 values reported. 
+% 
+% 
 
+
+
+\subsection{Experiment 2}
+Tables \ref{tab:ul-evals-5} and \ref{tab:ll-evals} present the statistic values
+obtained by QBCA with respect to the NFEs computed in the upper and lower level,
+respectively. As it was the case with respect to the accuracy results, the behavior
+observed in the evaluations used in the upper level (Table \ref{tab:ul-evals})
+was robust. In contrast, more variability was observed in the lower level
+(Table \ref{tab:ll-evals}). 
+
+
+\begin{table}[htb]
+    \caption{Upper Level Accuracy obtained from 31 independent runs by QBCA on low-dimensional instances.}
+    \label{tab:ul-accur-5}
+    \centering
+    \begin{tabular}{ccccc}
+        \hline
+             & Best &  Median  &  Worst &  Std. \\ \hline
+        SMD1 & 1.7062E-06 & 3.7011E-05 & 9.9622E-05 & 2.5257E-05 \\ \hline 
+        SMD2 & 2.3506E-06 & 3.8328E-05 & 9.5772E-05 & 3.1144E-05 \\ \hline 
+        SMD3 & 1.5510E-08 & 2.6711E-05 & 9.5526E-05 & 2.7578E-05 \\ \hline 
+        SMD4 & 1.4199E-06 & 3.7548E-05 & 9.4937E-05 & 3.3176E-05 \\ \hline 
+        SMD5 & 2.2916E-06 & 3.7063E-05 & 9.9228E-05 & 2.9727E-05 \\ \hline 
+        SMD6 & 1.6154E+00 & 1.0716E+01 & 1.2449E+01 & 2.3314E+00 \\ \hline 
+        SMD7 & 7.7884E-01 & 7.7884E-01 & 2.9590E+00 & 3.9155E-01 \\ \hline 
+        SMD8 & 2.3498E-06 & 5.8509E-05 & 9.7624E-05 & 2.4432E-05 \\ \hline 
+ 
+    \end{tabular}
+\end{table}
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[htb]
+    \caption{Lower Level Accuracy obtained from 31 independent runs by QBCA on low-dimensional instances.}
+    \label{tab:ll-accur-5}
+    \centering
+    \begin{tabular}{ccccc}
+        \hline
+             & Best &  Median  &  Worst &  Std. \\ \hline
+        SMD1 & 4.5075E-11 & 6.5495E-06 & 6.2989E-05 & 1.7046E-05 \\ \hline 
+        SMD2 & 3.1313E-08 & 5.9320E-06 & 6.1921E-05 & 1.5553E-05 \\ \hline 
+        SMD3 & 1.0822E-09 & 4.7070E-06 & 5.9067E-05 & 1.4857E-05 \\ \hline 
+        SMD4 & 9.4437E-09 & 2.3948E-06 & 5.0427E-05 & 1.4513E-05 \\ \hline 
+        SMD5 & 1.9597E-09 & 8.2375E-06 & 7.3105E-05 & 2.0953E-05 \\ \hline 
+        SMD6 & 9.3386E-09 & 4.1155E-05 & 3.4679E-02 & 7.1782E-03 \\ \hline 
+        SMD7 & 1.2499E+02 & 1.2500E+02 & 1.2500E+02 & 9.8179E-04 \\ \hline 
+        SMD8 & 1.6166E-07 & 7.5347E-06 & 1.7859E-05 & 5.8398E-06 \\ \hline 
+
+    \end{tabular}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{table}[htbp]
-    \caption{Upper Level Accuracy obtained from 31 independent runs by QBCA.}
+    \caption{Upper Level Accuracy obtained from 31 independent runs by QBCA on high-dimensional instances.}
     \label{tab:ul-accur}
     \centering
     \begin{tabular}{ccccc}
@@ -633,27 +686,9 @@ values reported.
 \end{table}
 % 
 
-\begin{table}[htbp]
-    \caption{Upper Level Accuracy obtained from 31 independent runs by QBCA. 5-dimensional}
-    \label{tab:ul-accur-5}
-    \centering
-    \begin{tabular}{ccccc}
-        \hline
-             & Best &  Median  &  Worst &  Std. \\ \hline
-        SMD1 & 1.7062E-06 & 3.7011E-05 & 9.9622E-05 & 2.5257E-05 \\ \hline 
-        SMD2 & 2.3506E-06 & 3.8328E-05 & 9.5772E-05 & 3.1144E-05 \\ \hline 
-        SMD3 & 1.5510E-08 & 2.6711E-05 & 9.5526E-05 & 2.7578E-05 \\ \hline 
-        SMD4 & 1.4199E-06 & 3.7548E-05 & 9.4937E-05 & 3.3176E-05 \\ \hline 
-        SMD5 & 2.2916E-06 & 3.7063E-05 & 9.9228E-05 & 2.9727E-05 \\ \hline 
-        SMD6 & 1.6154E+00 & 1.0716E+01 & 1.2449E+01 & 2.3314E+00 \\ \hline 
-        SMD7 & 7.7884E-01 & 7.7884E-01 & 2.9590E+00 & 3.9155E-01 \\ \hline 
-        SMD8 & 2.3498E-06 & 5.8509E-05 & 9.7624E-05 & 2.4432E-05 \\ \hline 
- 
-    \end{tabular}
-\end{table}
 
 \begin{table}[htbp]
-    \caption{Lower Level Accuracy obtained from 31 independent runs by QBCA.}
+    \caption{Lower Level Accuracy obtained from 31 independent runs by QBCA on high-dimensional instances.}
     \label{tab:ll-accur}
     \centering
     \begin{tabular}{ccccc}
@@ -681,34 +716,25 @@ values reported.
 \end{table}
 
 \begin{table}[htbp]
-    \caption{Lower Level Accuracy obtained from 31 independent runs by QBCA. 5-dimensional}
-    \label{tab:ll-accur-5}
+    \caption{Number of upper level evaluations obtained from 31 independent runs by QBCA on low-dimensional instances.}
+    \label{tab:ul-evals-5}
     \centering
-    \begin{tabular}{ccccc}
+    \begin{tabular}{cccccc}
         \hline
-             & Best &  Median  &  Worst &  Std. \\ \hline
-        SMD1 & 4.5075E-11 & 6.5495E-06 & 6.2989E-05 & 1.7046E-05 \\ \hline 
-        SMD2 & 3.1313E-08 & 5.9320E-06 & 6.1921E-05 & 1.5553E-05 \\ \hline 
-        SMD3 & 1.0822E-09 & 4.7070E-06 & 5.9067E-05 & 1.4857E-05 \\ \hline 
-        SMD4 & 9.4437E-09 & 2.3948E-06 & 5.0427E-05 & 1.4513E-05 \\ \hline 
-        SMD5 & 1.9597E-09 & 8.2375E-06 & 7.3105E-05 & 2.0953E-05 \\ \hline 
-        SMD6 & 9.3386E-09 & 4.1155E-05 & 3.4679E-02 & 7.1782E-03 \\ \hline 
-        SMD7 & 1.2499E+02 & 1.2500E+02 & 1.2500E+02 & 9.8179E-04 \\ \hline 
-        SMD8 & 1.6166E-07 & 7.5347E-06 & 1.7859E-05 & 5.8398E-06 \\ \hline 
-
+             & Best &  Median &  Mean &  Worst &  Std. \\ \hline
+        SMD1 & 136 & 210 & 212 & 318 & 42 \\ \hline 
+        SMD2 & 116 & 192 & 191 & 242 & 33 \\ \hline 
+        SMD3 & 80 & 217 & 216 & 323 & 54 \\ \hline 
+        SMD4 & 112 & 167 & 164 & 236 & 31 \\ \hline 
+        SMD5 & 123 & 207 & 208 & 269 & 31 \\ \hline 
+        SMD6 & 2000 & 2000 & 2000 & 2000 & 0 \\ \hline 
+        SMD7 & 2000 & 2000 & 2000 & 2000 & 0 \\ \hline 
+        SMD8 & 235 & 326 & 329 & 411 & 47 \\ \hline 
     \end{tabular}
 \end{table}
-
-\subsection{Experiment 2}
-Tables \ref{tab:ul-evals} and \ref{tab:ll-evals} present the statistic values
-obtained by QBCA with respect to the NFEs computed in the upper and lower level,
-respectively. As it was the case with respect to the accuracy results, the behavior
-observed in the evaluations used in the upper level (Table \ref{tab:ul-evals})
-was robust. In contrast, more variability was observed in the lower level
-(Table \ref{tab:ll-evals}). 
-
+% 
 \begin{table}[htbp]
-    \caption{Number of upper level evaluations obtained from 31 independent runs by QBCA.}
+    \caption{Number of upper level evaluations obtained from 31 independent runs by QBCA on high-dimensional instances.}
     \label{tab:ul-evals}
     \centering
     \begin{tabular}{cccccc}
@@ -725,28 +751,26 @@ was robust. In contrast, more variability was observed in the lower level
     \end{tabular}
 \end{table}
 
+
 \begin{table}[htbp]
-    \caption{Number of upper level evaluations obtained from 31 independent runs by QBCA. 5-dimensional}
-    \label{tab:ul-evals-5}
+    \caption{Number of lower level evaluations obtained from 31 independent runs by QBCA on low-dimensional instances.}
+    \label{tab:ll-evals-5}
     \centering
     \begin{tabular}{cccccc}
         \hline
-             & Best &  Median &  Mean &  Worst &  Std. \\ \hline
-        SMD1 & 136 & 210 & 212 & 318 & 42 \\ \hline 
-        SMD2 & 116 & 192 & 191 & 242 & 33 \\ \hline 
-        SMD3 & 80 & 217 & 216 & 323 & 54 \\ \hline 
-        SMD4 & 112 & 167 & 164 & 236 & 31 \\ \hline 
-        SMD5 & 123 & 207 & 208 & 269 & 31 \\ \hline 
-        SMD6 & 2000 & 2000 & 2000 & 2000 & 0 \\ \hline 
-        SMD7 & 2000 & 2000 & 2000 & 2000 & 0 \\ \hline 
-        SMD8 & 235 & 326 & 329 & 411 & 47 \\ \hline 
+            & Best &  Median &  Mean &  Worst &  Std. \\ \hline
+        SMD1 & 44220 & 47951 & 48461 & 55347 & 2698 \\ \hline 
+        SMD2 & 42881 & 47187 & 47333 & 52255 & 2607 \\ \hline 
+        SMD3 & 45357 & 55797 & 56283 & 74136 & 6403 \\ \hline 
+        SMD4 & 42066 & 45672 & 45579 & 49855 & 2188 \\ \hline 
+        SMD5 & 44300 & 50547 & 50450 & 56417 & 2499 \\ \hline 
+        SMD6 & 122540 & 142010 & 141710 & 156390 & 5736 \\ \hline 
+        SMD7 & 128290 & 132460 & 134850 & 189760 & 10517 \\ \hline 
+        SMD8 & 55204 & 63039 & 63093 & 69120 & 3671 \\ \hline 
     \end{tabular}
 \end{table}
-
-
-
 \begin{table}[htbp]
-    \caption{Number of lower level evaluations obtained from 31 independent runs by QBCA.}
+    \caption{Number of lower level evaluations obtained from 31 independent runs by QBCA on high-dimensional instances.}
     \label{tab:ll-evals}
     \centering
     \begin{tabular}{cccccc}
@@ -763,33 +787,15 @@ was robust. In contrast, more variability was observed in the lower level
     \end{tabular}
 \end{table}
 
-\begin{table}[htbp]
-    \caption{Number of lower level evaluations obtained from 31 independent runs by QBCA. 5-dimensional}
-    \label{tab:ll-evals-5}
-    \centering
-    \begin{tabular}{cccccc}
-        \hline
-            & Best &  Median &  Mean &  Worst &  Std. \\ \hline
-        SMD1 & 44220 & 47951 & 48461 & 55347 & 2698 \\ \hline 
-        SMD2 & 42881 & 47187 & 47333 & 52255 & 2607 \\ \hline 
-        SMD3 & 45357 & 55797 & 56283 & 74136 & 6403 \\ \hline 
-        SMD4 & 42066 & 45672 & 45579 & 49855 & 2188 \\ \hline 
-        SMD5 & 44300 & 50547 & 50450 & 56417 & 2499 \\ \hline 
-        SMD6 & 122540 & 142010 & 141710 & 156390 & 5736 \\ \hline 
-        SMD7 & 128290 & 132460 & 134850 & 189760 & 10517 \\ \hline 
-        SMD8 & 55204 & 63039 & 63093 & 69120 & 3671 \\ \hline 
-    \end{tabular}
-\end{table}
-
-
 \subsection{Experiment 3}
-As it can be seen in Table \ref{tab:ll-comparative-vals}, QBCA outperformed BLEAQ-II
-in five test problems in terms of both, upper and lower level median accuracy
+In Table \ref{tab:ll-comparative-vals-5} shows that no significant difference was observed (in most of the cases) when QBCA and BLEAQ-II solved low-dimensional instances. However, it can be seen in Table \ref{tab:ll-comparative-vals}, QBCA outperformed BLEAQ-II
+in five high-dimensional test problems in terms of both, upper and lower level median accuracy
 values, and BLEAQ-II was better in the remaining three SMD test problems. 
+% 39
 
-In terms of objective function evaluations, and based in Table \ref{tab:ul-comparative-fes},
-it is interesting to note that QBCA saved, on average, 24\% of NFEs at the upper
-level in six test problems. BLEAQ-II outperformed QBCA in the two remaining test
+In terms of objective function evaluations, and based in Tables \ref{tab:ul-comparative-fes-5} and \ref{tab:ul-comparative-fes},
+it is interesting to note that QBCA saved, on average, 38\% and 24\% of NFEs at the upper
+level in six low and high-dimensional test problems (respectively) where QBCA converged. BLEAQ-II outperformed QBCA in the two remaining test
 problems. Based on the same Table \ref{tab:ul-comparative-fes}, BLEAQ-II clearly
 required less evaluations in the lower level with respect to the NFEs used by
 QBCA (around 68\% less NFEs). 
@@ -801,8 +807,32 @@ strategy can be improved.
 
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{table}[t]
-    \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent runs.}
+    \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent runs on low-dimensional instances.}
+    \label{tab:ll-comparative-vals-5}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+%---------------------------------------------
+\hline
+& \multicolumn{2}{c|}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
+& QBCA & BLEAQ-II & QBCA & BLEAQ-II \\ \hline
+%---------------------------------------------
+SMD1 & 3.7011E-05 & 2.2382E-05 & 6.5495E-06 & 1.8424E-05\\ \hline 
+SMD2 & 3.8328E-05 & 3.3310E-05 & 5.9320E-06 & 4.6570E-05\\ \hline 
+SMD3 & 2.6711E-05 & 2.7792E-05 & 4.7070E-06 & 2.1052E-05\\ \hline 
+SMD4 & 3.7548E-05 & 3.6568E-06 & 2.3948E-06 & 3.6665E-05\\ \hline 
+SMD5 & 3.7063E-05 & 2.8510E-05 & 8.2375E-06 & 3.9704E-05\\ \hline 
+SMD6 & 1.0716E+01 & \textbf{3.1173E-14} & 4.1155E-05 & \textbf{2.3946E-16}\\ \hline 
+SMD7 & 7.7884E-01 & \textbf{2.8465E-05} & 1.2500E+02 & \textbf{3.9252E-05}\\ \hline 
+SMD8 & 5.8509E-05 & 2.7537E-05 & 7.5347E-06 & 2.1607E-05\\ \hline 
+%---------------------------------------------
+    \end{tabular}
+\end{table}
+
+\begin{table}[t]
+    \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent runs on high-dimensional instances.}
     \label{tab:ll-comparative-vals}
     \centering
     \begin{tabular}{|c|c|c|c|c|}
@@ -823,10 +853,12 @@ SMD8 & \textbf{7.8491E-05}  &           7.46E-03 & \textbf{2.1320E-05} &        
 %---------------------------------------------
     \end{tabular}
 \end{table}
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% -------------------------------------------------
 \begin{table}[t]
-    \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent runs. 5-dimensional}
-    \label{tab:ll-comparative-vals-5}
+    \caption{Median NFEs values by QBCA and BLEAQ-II obtained from 31 independent runs on low-dimensional instances.}
+    \label{tab:ul-comparative-fes-5}
     \centering
     \begin{tabular}{|c|c|c|c|c|}
 %---------------------------------------------
@@ -834,19 +866,17 @@ SMD8 & \textbf{7.8491E-05}  &           7.46E-03 & \textbf{2.1320E-05} &        
 & \multicolumn{2}{c|}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
 & QBCA & BLEAQ-II & QBCA & BLEAQ-II \\ \hline
 %---------------------------------------------
-SMD1 & 3.7011E-05 & 2.2382E-05 & 6.5495E-06 & 1.8424E-05\\ \hline 
-SMD2 & 3.8328E-05 & 3.3310E-05 & 5.9320E-06 & 4.6570E-05\\ \hline 
-SMD3 & 2.6711E-05 & 2.7792E-05 & 4.7070E-06 & 2.1052E-05\\ \hline 
-SMD4 & 3.7548E-05 & 3.6568E-06 & 2.3948E-06 & 3.6665E-05\\ \hline 
-SMD5 & 3.7063E-05 & 2.8510E-05 & 8.2375E-06 & 3.9704E-05\\ \hline 
-SMD6 & 1.0716E+01 & 3.1173E-14 & 4.1155E-05 & 2.3946E-16\\ \hline 
-SMD7 & 7.7884E-01 & 2.8465E-05 & 1.2500E+02 & 3.9252E-05\\ \hline 
-SMD8 & 5.8509E-05 & 2.7537E-05 & 7.5347E-06 & 2.1607E-05\\ \hline 
+SMD1 & \textbf{210} & 236 & 47951 & \textbf{13692}  \\ \hline 
+SMD2 & \textbf{192} & 320 & 47187 & \textbf{11240}  \\ \hline 
+SMD3 & \textbf{217} & 346 & 55797 & \textbf{20320}  \\ \hline 
+SMD4 & \textbf{167} & 426 & 45672 & \textbf{13094}  \\ \hline 
+SMD5 & \textbf{207} & 494 & 50547 & \textbf{21548}  \\ \hline 
+SMD6 & 2000 & \textbf{566} & 142010 & \textbf{2935}  \\ \hline 
+SMD7 & 2000 & \textbf{494} & 132460 & \textbf{19236}  \\ \hline 
+SMD8 & \textbf{326} & 1561 & 63039 & \textbf{58310}  \\ \hline 
 %---------------------------------------------
     \end{tabular}
 \end{table}
-
-% -------------------------------------------------
 
 
 \begin{table}[t]
@@ -871,34 +901,28 @@ SMD8 & \textbf{2432}  & 5569          &  483680 & \textbf{289886} \\ \hline
     \end{tabular}
 \end{table}
 
-\begin{table}[t]
-    \caption{Median NFEs values by QBCA and BLEAQ-II obtained from 31 independent runs. 5-dimensional}
-    \label{tab:ul-comparative-fes-5}
+
+\subsection{Experiment 4} % (fold)
+
+Figs. \ref{fig:convergence-5} and \ref{fig:convergence} show the convergence plots when QBCA solved six SMD instances. A fast convergence to the optimal value is observed in most of the cases. The importance of the Tykhonov regularization to provide such behavior is highlighted through these plots.
+That can be suitable for computationally-expensive BO problems.
+
+\begin{figure*}[ht]
     \centering
-    \begin{tabular}{|c|c|c|c|c|}
-%---------------------------------------------
-\hline
-& \multicolumn{2}{c|}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
-& QBCA & BLEAQ-II & QBCA & BLEAQ-II \\ \hline
-%---------------------------------------------
-SMD1 & \textbf{210} & 236 & 47951 & \textbf{13692}  \\ \hline 
-SMD2 & \textbf{192} & 320 & 47187 & \textbf{11240}  \\ \hline 
-SMD3 & \textbf{217} & 346 & 55797 & \textbf{20320}  \\ \hline 
-SMD4 & \textbf{167} & 426 & 45672 & \textbf{13094}  \\ \hline 
-SMD5 & \textbf{207} & 494 & 50547 & \textbf{21548}  \\ \hline 
-SMD6 & 2000 & \textbf{566} & 142010 & \textbf{2935}  \\ \hline 
-SMD7 & 2000 & \textbf{494} & 132460 & \textbf{19236}  \\ \hline 
-SMD8 & \textbf{326} & 1561 & 63039 & \textbf{58310}  \\ \hline 
-%---------------------------------------------
-    \end{tabular}
-\end{table}
+    \includegraphics[width=\linewidth]{img/SMD_2_3.pdf}
+    \caption{Convergence plot for median upper level function value obtained from 31 independent runs of QBCA on SMD1-SMD5 and SMD8 low-dimensional problems. Log scale is used for visualization purposes.}
+    \label{fig:convergence-5}
+\end{figure*}
 
-
-\begin{figure*}[t]
+\begin{figure*}[ht]
     \centering
     \includegraphics[width=\linewidth]{img/SMD_5_5.pdf}
-    \caption{Convergence plot for median upper level function value obtained from 31 independent runs of QBCA on SMD1-SMD5 and SMD8 problems with $D_{ul} = D_{ll} = 5$. Log scale is used for visualization purposes.}
+    \caption{Convergence plot for median upper level function value obtained from 31 independent runs of QBCA on SMD1-SMD5 and SMD8 high-dimensional problems. Log scale is used for visualization purposes.}
+    \label{fig:convergence}
 \end{figure*}
+
+
+% subsection experiment_3 (end)
 
 % section numerical_result (end)
 
@@ -921,11 +945,11 @@ metaheuristic operator with the quasi-Newton method and a problem relaxation.
 
 The results of three experiments when solving eight test problems showed that QBCA
 is robust to find competitive results based on accuracy in both, upper and lower
-levels. Such robustness was also found regarding the number of evaluations required
+levels on scale test problems. Such robustness was also found regarding the number of evaluations required
 in the upper level. However, in the lower level more variations in the number of
 evaluations were observed. Finally, QBCA provided a competitive performance against
 the state-of-the-art BLEAQ-II algorithm considering accuracy in both, upper and 
-lower levels. Furthermore, QBCA saved evaluations in the upper level, but required
+lower levels. Furthermore, QBCA saved evaluations in the upper level since provided fast convergence to the optimum in most of the cases, but required
 more of them in the lower level when compared against BLEAQ-II. 
 
 Future research will focus on utilizing some theorems about Tykhonov regularization
