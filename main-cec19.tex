@@ -122,7 +122,8 @@ method \cite{fletcher2013practical}. Here, an unconstrained nested scheme is
 considered, where both objective functions are nonnegative (not a restrictive
 assumption) and should be maximized.
 
-This paper is organized as follows: Section \ref{sec:qca} describes the proposed
+This paper is organized as follows: A brief description of bilevel optimization
+is presented in Section \ref{sec:a_brief_BO} . Section \ref{sec:qca} describes the proposed
 approach, including explanations of the proposed population-based algorithm based
 on an operator inspired in the center of mass, the quasi-Newton method to deal
 with infeasible solutions in the lower level, and the Tykhonov Regularization to
@@ -133,7 +134,7 @@ the future work.
 
 
 \section{A Brief Description of Bilevel Optimization} % (fold)
-\label{sec:a_brief_description_of_bilevel_optimization}
+\label{sec:a_brief_BO}
 
 %--------------------------------------------------
 %--------------------------------------------------
@@ -554,17 +555,22 @@ of SMD test problems are identified and we enumerate some of the most important:
     \item Multiple global solutions (SMD6).
 \end{itemize}
 
-Here, we use both, low and high-dimensional versions of the SMD test suite. The low-dimensional problems consists of 5 variables where $D_{ul} = 2$ and $D_{ll}  = 3$. The high dimensional SMD instances of 10 variables where $D_{ul} = 5$ and $D_{ll}  = 5$. The description for SMD test suite can be found in \cite{sinha2014test}.
+Here, we use both, low and high-dimensional versions of the SMD test suite. The
+low-dimensional problems consists of 5 variables where $D_{ul} = 2$ and $D_{ll}  = 3$.
+The high dimensional SMD instances of 10 variables where $D_{ul} = 5$ and $D_{ll}  = 5$.
+The description for SMD test suite can be found in \cite{sinha2014test}.
 
 
-The parameters adopted after preliminary
-experiments were $k = 3$, the stepsize parameters $\eta_{X} \in (0, \eta_{\max}]$ and $\eta_{Y} \in (0, 1/\eta_{\max}]$ (randomly chosen with uniform distribution). Also,
-$\alpha = \beta = 1 / 20$ and $s_{\min} = 1/100$. 
-The  algorithm stopped either
-when the accuracy ($1\times 10^{-4}$) was obtained or the maximum number of functions evaluations (MFEs) for the upper level was reached.
+The parameters adopted after preliminary experiments were $k = 3$, the stepsize
+parameters $\eta_{X} \in (0, \eta_{\max}]$ and $\eta_{Y} \in (0, 1/\eta_{\max}]$
+(randomly chosen with uniform distribution). Also, $\alpha = \beta = 1 / 20$ and
+$s_{\min} = 1/100$.  The  algorithm stopped either when the accuracy ($1\times 10^{-4}$)
+was obtained or the maximum number of functions evaluations (MFEs) for the upper
+level was reached.
 % 
 % 
-The MFEs was $1000D_{UL}$ for the upper and unlimited lower level evaluations were provided.
+The MFEs was $1000D_{UL}$ for the upper and unlimited lower level evaluations were
+provided.
 % 
 
 
@@ -716,7 +722,8 @@ was robust. In contrast, more variability was observed in the lower level
 \end{table}
 
 \begin{table}[htbp]
-    \caption{Number of upper level evaluations obtained from 31 independent runs by QBCA on low-dimensional instances.}
+    \caption{Number of upper level evaluations obtained from 31 independent runs by
+             QBCA on low-dimensional instances.}
     \label{tab:ul-evals-5}
     \centering
     \begin{tabular}{cccccc}
@@ -734,7 +741,8 @@ was robust. In contrast, more variability was observed in the lower level
 \end{table}
 % 
 \begin{table}[htbp]
-    \caption{Number of upper level evaluations obtained from 31 independent runs by QBCA on high-dimensional instances.}
+    \caption{Number of upper level evaluations obtained from 31 independent runs
+             by QBCA on high-dimensional instances.}
     \label{tab:ul-evals}
     \centering
     \begin{tabular}{cccccc}
@@ -753,7 +761,8 @@ was robust. In contrast, more variability was observed in the lower level
 
 
 \begin{table}[htbp]
-    \caption{Number of lower level evaluations obtained from 31 independent runs by QBCA on low-dimensional instances.}
+    \caption{Number of lower level evaluations obtained from 31 independent runs
+             by QBCA on low-dimensional instances.}
     \label{tab:ll-evals-5}
     \centering
     \begin{tabular}{cccccc}
@@ -770,7 +779,8 @@ was robust. In contrast, more variability was observed in the lower level
     \end{tabular}
 \end{table}
 \begin{table}[htbp]
-    \caption{Number of lower level evaluations obtained from 31 independent runs by QBCA on high-dimensional instances.}
+    \caption{Number of lower level evaluations obtained from 31 independent runs
+             by QBCA on high-dimensional instances.}
     \label{tab:ll-evals}
     \centering
     \begin{tabular}{cccccc}
@@ -788,17 +798,21 @@ was robust. In contrast, more variability was observed in the lower level
 \end{table}
 
 \subsection{Experiment 3}
-In Table \ref{tab:ll-comparative-vals-5} shows that no significant difference was observed (in most of the cases) when QBCA and BLEAQ-II solved low-dimensional instances. However, it can be seen in Table \ref{tab:ll-comparative-vals}, QBCA outperformed BLEAQ-II
-in five high-dimensional test problems in terms of both, upper and lower level median accuracy
-values, and BLEAQ-II was better in the remaining three SMD test problems. 
+In Table \ref{tab:ll-comparative-vals-5} shows that no significant difference was
+observed (in most of the cases) when QBCA and BLEAQ-II solved low-dimensional
+instances. However, it can be seen in Table \ref{tab:ll-comparative-vals}, QBCA
+outperformed BLEAQ-II in five high-dimensional test problems in terms of both,
+upper and lower level median accuracy values, and BLEAQ-II was better in the remaining
+three SMD test problems. 
 % 39
 
-In terms of objective function evaluations, and based in Tables \ref{tab:ul-comparative-fes-5} and \ref{tab:ul-comparative-fes},
-it is interesting to note that QBCA saved, on average, 38\% and 24\% of NFEs at the upper
-level in six low and high-dimensional test problems (respectively) where QBCA converged. BLEAQ-II outperformed QBCA in the two remaining test
-problems. Based on the same Table \ref{tab:ul-comparative-fes}, BLEAQ-II clearly
-required less evaluations in the lower level with respect to the NFEs used by
-QBCA (around 68\% less NFEs). 
+In terms of objective function evaluations, and based in Tables \ref{tab:ul-comparative-fes-5}
+and \ref{tab:ul-comparative-fes}, it is interesting to note that QBCA saved, on
+average, 38\% and 24\% of NFEs at the upper level in six low and high-dimensional
+test problems (respectively) where QBCA converged. BLEAQ-II outperformed QBCA in
+the two remaining test problems. Based on the same Table \ref{tab:ul-comparative-fes},
+BLEAQ-II clearly required less evaluations in the lower level with respect to the
+NFEs used by QBCA (around 68\% less NFEs). 
 
 Furthermore, the overall results suggest that Tykhonov regularization was useful
 to generate competitive results for BO problems. However, in test problems SMD6
@@ -810,7 +824,8 @@ strategy can be improved.
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{table}[t]
-    \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent runs on low-dimensional instances.}
+    \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent
+             runs on low-dimensional instances.}
     \label{tab:ll-comparative-vals-5}
     \centering
     \begin{tabular}{|c|c|c|c|c|}
@@ -832,7 +847,8 @@ SMD8 & 5.8509E-05 & 2.7537E-05 & 7.5347E-06 & 2.1607E-05\\ \hline
 \end{table}
 
 \begin{table}[t]
-    \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent runs on high-dimensional instances.}
+    \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent
+             runs on high-dimensional instances.}
     \label{tab:ll-comparative-vals}
     \centering
     \begin{tabular}{|c|c|c|c|c|}
@@ -857,7 +873,8 @@ SMD8 & \textbf{7.8491E-05}  &           7.46E-03 & \textbf{2.1320E-05} &        
 
 % -------------------------------------------------
 \begin{table}[t]
-    \caption{Median NFEs values by QBCA and BLEAQ-II obtained from 31 independent runs on low-dimensional instances.}
+    \caption{Median NFEs values by QBCA and BLEAQ-II obtained from 31 independent
+             runs on low-dimensional instances.}
     \label{tab:ul-comparative-fes-5}
     \centering
     \begin{tabular}{|c|c|c|c|c|}
@@ -904,20 +921,27 @@ SMD8 & \textbf{2432}  & 5569          &  483680 & \textbf{289886} \\ \hline
 
 \subsection{Experiment 4} % (fold)
 
-Figs. \ref{fig:convergence-5} and \ref{fig:convergence} show the convergence plots when QBCA solved six SMD instances. A fast convergence to the optimal value is observed in most of the cases. The importance of the Tykhonov regularization to provide such behavior is highlighted through these plots.
-That can be suitable for computationally-expensive BO problems.
+Figs. \ref{fig:convergence-5} and \ref{fig:convergence} show the convergence plots
+when QBCA solved six SMD instances. A fast convergence to the optimal value is
+observed in most of the cases. The importance of the Tykhonov regularization to
+provide such behavior is highlighted through these plots. That can be suitable
+for computationally-expensive BO problems.
 
 \begin{figure*}[ht]
     \centering
     \includegraphics[width=\linewidth]{img/SMD_2_3.pdf}
-    \caption{Convergence plot for median upper level function value obtained from 31 independent runs of QBCA on SMD1-SMD5 and SMD8 low-dimensional problems. Log scale is used for visualization purposes.}
+    \caption{Convergence plot for median upper level function value obtained from
+             31 independent runs of QBCA on SMD1-SMD5 and SMD8 low-dimensional
+             problems. Log scale is used for visualization purposes.}
     \label{fig:convergence-5}
 \end{figure*}
 
 \begin{figure*}[ht]
     \centering
     \includegraphics[width=\linewidth]{img/SMD_5_5.pdf}
-    \caption{Convergence plot for median upper level function value obtained from 31 independent runs of QBCA on SMD1-SMD5 and SMD8 high-dimensional problems. Log scale is used for visualization purposes.}
+    \caption{Convergence plot for median upper level function value obtained from
+             31 independent runs of QBCA on SMD1-SMD5 and SMD8 high-dimensional
+             problems. Log scale is used for visualization purposes.}
     \label{fig:convergence}
 \end{figure*}
 
@@ -945,12 +969,13 @@ metaheuristic operator with the quasi-Newton method and a problem relaxation.
 
 The results of three experiments when solving eight test problems showed that QBCA
 is robust to find competitive results based on accuracy in both, upper and lower
-levels on scale test problems. Such robustness was also found regarding the number of evaluations required
-in the upper level. However, in the lower level more variations in the number of
-evaluations were observed. Finally, QBCA provided a competitive performance against
-the state-of-the-art BLEAQ-II algorithm considering accuracy in both, upper and 
-lower levels. Furthermore, QBCA saved evaluations in the upper level since provided fast convergence to the optimum in most of the cases, but required
-more of them in the lower level when compared against BLEAQ-II. 
+levels on scale test problems. Such robustness was also found regarding the number
+of evaluations required in the upper level. However, in the lower level more variations
+in the number of evaluations were observed. Finally, QBCA provided a competitive
+performance against the state-of-the-art BLEAQ-II algorithm considering accuracy
+in both, upper and lower levels. Furthermore, QBCA saved evaluations in the upper
+level since provided fast convergence to the optimum in most of the cases, but
+required more of them in the lower level when compared against BLEAQ-II. 
 
 Future research will focus on utilizing some theorems about Tykhonov regularization
 (dynamic values for $\alpha$ and $\beta$) in order to ensure convergence, theoretically
@@ -976,7 +1001,7 @@ project No. 220522.
 
 \end{document}
 
-
+% BLEAQ-II results  low dimensional problems
 % fn & Best &  Median &  Mean &  Worst &  Std. \\ 
 
 % 1 & 4.5863e-16 & 2.2382e-05 & 4.0619e-05 & 1.9653e-04 & 4.5001e-05 \\ \hline 
