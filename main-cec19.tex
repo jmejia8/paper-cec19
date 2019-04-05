@@ -51,7 +51,7 @@ This work presents a population-based metaheuristic approach using Tykhonov
 regularization and a quasi-Newton method, called Quasi-Newton Bilevel Centers
 Algorithm (QBCA), to deal with bilevel optimization problems. Tykhonov regularization
 for bilevel optimization is adopted to handle problems with nonunique lower level
-solutions. Besides, a quasi-Newton method is adapted to deal with unfeasible solutions
+solutions. Besides, a quasi-Newton method is adapted to deal with infeasible solutions
 in the lower level. The performance of this proposal is assessed by using representative
 test functions for bilevel optimization. The results based on accuracy and number
 of evaluations are promising when QBCA is compared against the efficient algorithm
@@ -80,6 +80,61 @@ where a upper level authority (leader) optimizes their objectives restricted to
 optimal decisions/solutions given by a  lower level authority (follower)
 \cite{brotcorne2001bilevel,kalashnikov2010comparison,sinha2015transportation,von1945theory,wang2014bilevel}.
 
+Due to the importance of BO, many authors have proposed different solutions
+for those problems, from mathematical approaches (Karush-Kuhn-Tucker condition for
+single-level reduction, gradient based algorithm, etc.) \cite{dempe2002foundations,shi2005extended}
+to swarm intelligence (particle swarm optimization) and evolutionary algorithms
+(genetic algorithms, evolution strategies, differential evolution)
+\cite{derrac2011practical,angelo2013differential,li2006hierarchical}.
+
+In order to handle BO problems three strategies can be identified: (1) single-level
+reduction (2) nested and (3) penalty methods. Single-level reduction is restricted
+to smooth enough functions and it is used to transform a BO problem into a single-level/traditional
+problem by using Karush-Kuhn-Tucker conditions. As a consequence, such strategy
+may be not easy to apply in some real-world problems  \cite{dempe2002foundations,colson2007overview}. %
+Nested strategies can be effective when solve BO problems in a direct way. However, 
+a high computational cost is required when high-dimensionality is present or when
+objective functions are expensive to compute. Penalty methods are used to handle
+constraints in a constrained problem so as to transform it into an unconstrained
+optimization problem by adding penalty factors to control the degree of penalization.
+This strategy is often hard to calibrate, particularly for large-scale problems.
+Nevertheless, it is simple to understand and also easy to apply \cite{savard1994steepest,white1993penalty}.
+Finally, it has been noted that the issue of non-unique optimal lower level
+solutions has not been explored in this type of approaches.
+
+As mentioned above, among population-based metaheuristics for BO problems, most
+research efforts are focused on swarm intelligence and evolutionary algorithms.
+Such preference is mainly because those methods have been successfully applied
+to solve single-level optimization problems. However, their computational cost
+in a BO problem, based on the number of evaluations, can be significantly high,
+particularly in the lower level of the BO problem. In contrast, the combination
+of population-based metaheuristics with mathematical programming methods may
+provide, considering some assumptions, efficient and accurate approaches where
+their computational cost can be reduced \cite{sinha2013efficient,wang2005evolutionary}.
+Furthermore, to the best of the authors' knowledge, Tykhonov Regularization has
+not been incorporated in this type of algorithms. 
+
+This is the main motivation of this research work, which uses the Tykhonov
+Regularization \cite{dempe2002foundations} to handle problems with non-unique
+lower level solutions in the combination of a population-based algorithm, originally
+designed to solve global optimization problems \cite{Mejia2018}, with a quasi-Newton
+method \cite{fletcher2013practical}. Here, an unconstrained nested scheme is
+considered, where both objective functions are nonnegative (not a restrictive
+assumption) and should be maximized.
+
+This paper is organized as follows: Section \ref{sec:qca} describes the proposed
+approach, including explanations of the proposed population-based algorithm based
+on an operator inspired in the center of mass, the quasi-Newton method to deal
+with infeasible solutions in the lower level, and the Tykhonov Regularization to
+deal with non-unique optimal solutions in the lower level. Section \ref{sec:numerical_result}
+includes the experiments proposed, their results and corresponding discussion.
+Finally, Section \ref{sec:conclusions} summarizes the conclusions and states
+the future work.
+
+
+\section{A Brief Description of Bilevel Optimization} % (fold)
+\label{sec:a_brief_description_of_bilevel_optimization}
+
 %--------------------------------------------------
 %--------------------------------------------------
 The definition of a BO problem can be given in terms of the traditional
@@ -98,7 +153,7 @@ finding the set \cite{chong2013introduction,rao2009engineering}:
 \end{align}
 % 
 where a bounded below function $f$ , i.e., $f(\vec{x}^*)> -\infty$ is called objective
-function. $X$ is a $D$-dimensional parameter space, i.e. $X \subset \mathbb{R}^D$
+function. $X$ is a $n$-dimensional parameter space, i.e. $X \subset \mathbb{R}^n$
 is the domain for $\vec{x}$ representing constraints on
 allowable values for $\vec{x}$.\\
 
@@ -163,59 +218,7 @@ machine learning algorithms tuning, among others \cite{bard2013practical,sinha20
 Therefore, BO problems require effective algorithms to approximate competitive
 solutions.
 
-Due to the importance of BO, many authors have proposed different solutions
-for those problems, from mathematical approaches (Karush-Kuhn-Tucker condition for
-single-level reduction, gradient based algorithm, etc.) \cite{dempe2002foundations,shi2005extended}
-to swarm intelligence (particle swarm optimization) and evolutionary algorithms
-(genetic algorithms, evolution strategies, differential evolution)
-\cite{derrac2011practical,angelo2013differential,li2006hierarchical}.
-
-In order to handle BO problems three strategies can be identified: (1) single-level
-reduction (2) nested and (3) penalty methods. Single-level reduction is restricted
-to smooth enough functions and it is used to transform a BO problem into a single-level/traditional
-problem by using Karush-Kuhn-Tucker conditions. As a consequence, such strategy
-may be not easy to apply in some real-world problems  \cite{dempe2002foundations,colson2007overview}. %
-Nested strategies can be effective when solve BO problems in a direct way. However, 
-a high computational cost is required when high-dimensionality is present or when
-objective functions are expensive to compute. Penalty methods are used to handle
-constraints in a constrained problem so as to transform it into an unconstrained
-optimization problem by adding penalty factors to control the degree of penalization.
-This strategy is often hard to calibrate, particularly for large-scale problems.
-Nevertheless, it is simple to understand and also easy to apply \cite{savard1994steepest,white1993penalty}.
-Finally, it has been noted that the issue of non-unique optimal lower level
-solutions has not been explored in this type of approaches.
-
-As mentioned above, among population-based metaheuristics for BO problems, most
-research efforts are focused on swarm intelligence and evolutionary algorithms.
-Such preference is mainly because those methods have been successfully applied
-to solve single-level optimization problems. However, their computational cost
-in a BO problem, based on the number of evaluations, can be significantly high,
-particularly in the lower level of the BO problem. In contrast, the combination
-of population-based metaheuristics with mathematical programming methods may
-provide, considering some assumptions, efficient and accurate approaches where
-their computational cost can be reduced \cite{sinha2013efficient,wang2005evolutionary}.
-Furthermore, to the best of the authors' knowledge, Tykhonov Regularization has
-not been incorporated in this type of algorithms. 
-
-This is the main motivation of this research work, which uses the Tykhonov
-Regularization \cite{dempe2002foundations} to handle problems with non-unique
-lower level solutions in the combination of a population-based algorithm, originally
-designed to solve global optimization problems \cite{Mejia2018}, with a quasi-Newton
-method \cite{fletcher2013practical}. Here, an unconstrained nested scheme is
-considered, where both objective functions are nonnegative (not a restrictive
-assumption) and should be maximized.
-
-This paper is organized as follows: Section \ref{sec:qca} describes the proposed
-approach, including explanations of the proposed population-based algorithm based
-on an operator inspired in the center of mass, the quasi-Newton method to deal
-with infeasible solutions in the lower level, and the Tykhonov Regularization to
-deal with non-unique optimal solutions in the lower level. Section \ref{sec:numerical_result}
-includes the experiments proposed, their results and corresponding discussion.
-Finally, Section \ref{sec:conclusions} summarizes the conclusions and states
-the future work.
-
-
-
+% section a_brief_description_of_bilevel_optimization (end)
 
 
 \section{Quasi-Newton Bilevel Centers Algorithm (QBCA)} % (fold)
@@ -264,7 +267,7 @@ perturbation of a bilevel optimization problem where the lower level problem has
 not a unique optimal solution but the upper level objective function $F$ is 
 strongly convex, then the problem in Eq. \ref{eqn:relaxed}:
 \begin{equation}
-    \min_{x \in X} \{ f(\vec{x},\vec{y}) + \alpha F(\vec{x}, \vec{y}) : g_j(\vec{x}, \vec{y}), j=1,2,\ldots, J\} 
+    \min_{y \in Y} \{ f(\vec{x},\vec{y}) + \alpha F(\vec{x}, \vec{y}) : g_j(\vec{x}, \vec{y}), j=1,2,\ldots, J\} 
     \label{eqn:relaxed}
 \end{equation}
 % 
@@ -298,10 +301,11 @@ If both levels there are maximization problems with non-negative objective funct
 (ECA assumptions \cite{Mejia2018}), then $m_F(\vec{x}, \vec{y}) = \varphi_F (\vec{x}, \vec{y}; \beta)$.
 Hence, such operator is defined in Eq. \ref{eqn:centerX}:
 % 
-\begin{equation}
-    \vec{c}_X = \sum_{(\vec{x}, \vec{y})\in U} m_F(\vec{x},\ \vec{y}) \cdot \vec{x},
+\begin{align}
     \label{eqn:centerX}
-\end{equation}
+    \vec{c}_X &= \dfrac{1}{W} \sum_{(\vec{x}, \vec{y})\in U} m_F(\vec{x},\ \vec{y}) \cdot \vec{x}\\
+            W &= \sum_{(\vec{x}, \vec{y})\in U} m_F(\vec{x},\ \vec{y}), \nonumber
+\end{align}
 % 
 where $U \subset P$ is generated by choosing its elements uniformly at random.
 Note that, at the upper level, $\varphi_F (\vec{x},\ \vec{y})$ is used to penalize
@@ -326,10 +330,11 @@ and this new direction $\vec{p}$ will be called \textit{current-to-center} direc
 On the the other hand, the center of mass for the lower level is defined on
 $V \subset P$ in Eq. \ref{eqn:centerY}:
 % 
-\begin{equation}
-    \vec{c}_Y = \sum_{(\vec{x}, \vec{y})\in V} m_f(\vec{x},\ \vec{y}) \cdot \vec{y},
+\begin{align}
     \label{eqn:centerY}
-\end{equation}
+    \vec{c}_Y &= \sum_{(\vec{x}, \vec{y})\in V} m_f(\vec{x},\ \vec{y}) \cdot \vec{y},\\
+         W &= \sum_{(\vec{x}, \vec{y})\in V} m_f(\vec{x},\ \vec{y}) , \nonumber
+\end{align}
 % 
 where $m_f(\vec{x}, \vec{y}) = \varphi_f(\vec{x}, \vec{y}; \alpha )$ if ECA assumptions
 are satisfied, otherwise the mass is computed as follows:
@@ -418,7 +423,7 @@ smooth in a point the algorithm should be stopped.
 \end{algorithm}
 
 We adapted a popular quasi-Newton method known as Broyden-Fletcher-Goldfarb-Shanno
-algorithm (BFGS) \cite{fletcher2013practical} in order to handle unfeasible
+algorithm (BFGS) \cite{fletcher2013practical} in order to handle infeasible
 solutions $(\vec{p}, \vec{y}_c)$ for bilevel optimization. Such adaptation is
 described in Algorithm \ref{alg:BFGS-LL}.
 % 
@@ -468,7 +473,7 @@ Moreover, for each $\alpha > 0$, the following result is obtained:
 \end{align}
 % 
 That provides some interesting facts when solutions are compared using $F$ or $f$,
-i.e.,  Eq. \ref{eqn:Fbound} means that if we compare solutions only using the
+i.e.,  equation \ref{eqn:Fbound} means that if we compare solutions only using the
 function $F$ our proposal can prefer best values of $F$ instead feasible solutions.
 On the other hand, Eq. \ref{eqn:fbound} means that feasible solutions will be
 preferred when two solutions are compared only in  terms of $f$. Thus, it is
@@ -506,8 +511,6 @@ $s_{\min}$. Here, the selection ratio is computed as follows: $ s = n /N$ where
 $n$ is the number of new solutions added to $P$. The complete approach is presented in 
 Algorithm \ref{alg:QBCA}.
 
-
-
 \begin{algorithm}[htbp]
     \caption{QBCA pseudocode}
     \label{alg:QBCA}
@@ -538,8 +541,9 @@ Algorithm \ref{alg:QBCA}.
 \section{Numerical Results and Discussion} % (fold)
 \label{sec:numerical_result}
 
-QBCA was implemented in the Julia Language \cite{bezanson2017julia} and it was
-tested using the 10-dimensional SMD problems ($D = D_{UL} = D_{LL} = 5$)
+QBCA was implemented in the Julia Programing Language \cite{bezanson2017julia}
+and it was tested using both 5-dimensional ($D = D_{UL} = 2 $ $ D_{LL} = 3$) and
+10-dimensional SMD problems ($D = D_{UL} = D_{LL} = 5$)
 \cite{sinha2014test,sinha2013efficient}. The first eight SMD test problems were
 proposed in order to offer controlled scalability of difficulties at both levels.
 Also, the optimal solutions are given for each problem. The principal properties
@@ -552,13 +556,18 @@ of SMD test problems are identified and we enumerate some of the most important:
 \end{itemize}
 
 The parameters adopted after preliminary
-experiments were $k = 3$, $\eta_{X} \in (0, \eta_{\max}]$, $\eta_{Y} \in (0, 1/\eta_{\max}]$
-uniformly at random and the maximum number of functions evaluations (MFEs) was
-$1000D_{UL}=5,000$ for the upper and unlimited lower level evaluations,
-$\alpha = \beta = 1 / 20$ and $s_{\min} = 1/100$. The  algorithm stopped either
+experiments were $k = 3$ (fixed), $\eta_{X} \in (0, \eta_{\max}]$ and $\eta_{Y} \in (0, 1/\eta_{\max}]$ are randomly chosen uniformly at random.
+$\alpha = \beta = 1 / 20$ and $s_{\min} = 1/100$. 
+
+% 
+The maximum number of functions evaluations (MFEs) was $1000D_{UL}=5,000$ for the
+upper and unlimited lower level evaluations.
+% 
+
+The  algorithm stopped either
 when the accuracy ($1\times 10^{-4}$) was obtained or the MFEs was reached.
 
-
+% 
 QBCA (Algorithm \ref{alg:QBCA}) was compared against BLEAQ-II, which is a state-of-the-art
 evolutionary algorithm for BO problems \cite{sinha2018review,sinha2013efficient}.
 BLEAQ-II solves the nested problem by using quadratic approximations of the
@@ -583,6 +592,13 @@ Three experiments were carried out:
 
 
 \subsection{Experiment 1}
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\linewidth]{img/SMD_2_3.pdf}
+    \caption{Convergence plot for median upper level function value obtained from 31 independent runs of QBCA on SMD1-SMD5 and SMD8 problems with $D_{ul} = 2 $ and $ D_{ll} = 3$. Log scale is used for visualization purposes.}
+\end{figure*}
+
 Tables \ref{tab:ul-accur} and \ref{tab:ll-accur} include the statistical results
 obtained by QBCA regarding accuracy in the upper and lower level, respectively.
 It can be noted that QBCA provides good accuracy values in most test problems
@@ -616,6 +632,26 @@ values reported.
     \end{tabular}
 \end{table}
 % 
+
+\begin{table}[htbp]
+    \caption{Upper Level Accuracy obtained from 31 independent runs by QBCA. 5-dimensional}
+    \label{tab:ul-accur-5}
+    \centering
+    \begin{tabular}{ccccc}
+        \hline
+             & Best &  Median  &  Worst &  Std. \\ \hline
+        SMD1 & 1.7062E-06 & 3.7011E-05 & 9.9622E-05 & 2.5257E-05 \\ \hline 
+        SMD2 & 2.3506E-06 & 3.8328E-05 & 9.5772E-05 & 3.1144E-05 \\ \hline 
+        SMD3 & 1.5510E-08 & 2.6711E-05 & 9.5526E-05 & 2.7578E-05 \\ \hline 
+        SMD4 & 1.4199E-06 & 3.7548E-05 & 9.4937E-05 & 3.3176E-05 \\ \hline 
+        SMD5 & 2.2916E-06 & 3.7063E-05 & 9.9228E-05 & 2.9727E-05 \\ \hline 
+        SMD6 & 1.6154E+00 & 1.0716E+01 & 1.2449E+01 & 2.3314E+00 \\ \hline 
+        SMD7 & 7.7884E-01 & 7.7884E-01 & 2.9590E+00 & 3.9155E-01 \\ \hline 
+        SMD8 & 2.3498E-06 & 5.8509E-05 & 9.7624E-05 & 2.4432E-05 \\ \hline 
+ 
+    \end{tabular}
+\end{table}
+
 \begin{table}[htbp]
     \caption{Lower Level Accuracy obtained from 31 independent runs by QBCA.}
     \label{tab:ll-accur}
@@ -644,6 +680,25 @@ values reported.
     \end{tabular}
 \end{table}
 
+\begin{table}[htbp]
+    \caption{Lower Level Accuracy obtained from 31 independent runs by QBCA. 5-dimensional}
+    \label{tab:ll-accur-5}
+    \centering
+    \begin{tabular}{ccccc}
+        \hline
+             & Best &  Median  &  Worst &  Std. \\ \hline
+        SMD1 & 4.5075E-11 & 6.5495E-06 & 6.2989E-05 & 1.7046E-05 \\ \hline 
+        SMD2 & 3.1313E-08 & 5.9320E-06 & 6.1921E-05 & 1.5553E-05 \\ \hline 
+        SMD3 & 1.0822E-09 & 4.7070E-06 & 5.9067E-05 & 1.4857E-05 \\ \hline 
+        SMD4 & 9.4437E-09 & 2.3948E-06 & 5.0427E-05 & 1.4513E-05 \\ \hline 
+        SMD5 & 1.9597E-09 & 8.2375E-06 & 7.3105E-05 & 2.0953E-05 \\ \hline 
+        SMD6 & 9.3386E-09 & 4.1155E-05 & 3.4679E-02 & 7.1782E-03 \\ \hline 
+        SMD7 & 1.2499E+02 & 1.2500E+02 & 1.2500E+02 & 9.8179E-04 \\ \hline 
+        SMD8 & 1.6166E-07 & 7.5347E-06 & 1.7859E-05 & 5.8398E-06 \\ \hline 
+
+    \end{tabular}
+\end{table}
+
 \subsection{Experiment 2}
 Tables \ref{tab:ul-evals} and \ref{tab:ll-evals} present the statistic values
 obtained by QBCA with respect to the NFEs computed in the upper and lower level,
@@ -662,11 +717,29 @@ was robust. In contrast, more variability was observed in the lower level
         SMD1 & 1221 & 1553 & 1559 & 2110 & 193.7 \\ \hline 
         SMD2 & 1089 & 1525 & 1491 & 1755 & 148.3 \\ \hline 
         SMD3 & 1262 & 1580 & 1584 & 1886 & 149.8 \\ \hline 
-        SMD4 & 876.0 & 1401 & 1382 & 2043 & 228.9 \\ \hline 
-        SMD5 & 421.0 & 1615 & 1577 & 1844 & 244.6 \\ \hline 
+        SMD4 & 876 & 1401 & 1382 & 2043 & 228.9 \\ \hline 
+        SMD5 & 421 & 1615 & 1577 & 1844 & 244.6 \\ \hline 
         SMD6 & 1591 & 1981 & 1979 & 2461 & 172.3 \\ \hline 
-        SMD7 & 421.0 & 5011 & 4717 & 5011 & 1135 \\ \hline 
+        SMD7 & 421 & 5011 & 4717 & 5011 & 1135 \\ \hline 
         SMD8 & 2121 & 2432 & 2427 & 2836 & 186.8 \\ \hline 
+    \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+    \caption{Number of upper level evaluations obtained from 31 independent runs by QBCA. 5-dimensional}
+    \label{tab:ul-evals-5}
+    \centering
+    \begin{tabular}{cccccc}
+        \hline
+             & Best &  Median &  Mean &  Worst &  Std. \\ \hline
+        SMD1 & 136 & 210 & 212 & 318 & 42 \\ \hline 
+        SMD2 & 116 & 192 & 191 & 242 & 33 \\ \hline 
+        SMD3 & 80 & 217 & 216 & 323 & 54 \\ \hline 
+        SMD4 & 112 & 167 & 164 & 236 & 31 \\ \hline 
+        SMD5 & 123 & 207 & 208 & 269 & 31 \\ \hline 
+        SMD6 & 2000 & 2000 & 2000 & 2000 & 0 \\ \hline 
+        SMD7 & 2000 & 2000 & 2000 & 2000 & 0 \\ \hline 
+        SMD8 & 235 & 326 & 329 & 411 & 47 \\ \hline 
     \end{tabular}
 \end{table}
 
@@ -690,9 +763,27 @@ was robust. In contrast, more variability was observed in the lower level
     \end{tabular}
 \end{table}
 
+\begin{table}[htbp]
+    \caption{Number of lower level evaluations obtained from 31 independent runs by QBCA. 5-dimensional}
+    \label{tab:ll-evals-5}
+    \centering
+    \begin{tabular}{cccccc}
+        \hline
+            & Best &  Median &  Mean &  Worst &  Std. \\ \hline
+        SMD1 & 44220 & 47951 & 48461 & 55347 & 2698 \\ \hline 
+        SMD2 & 42881 & 47187 & 47333 & 52255 & 2607 \\ \hline 
+        SMD3 & 45357 & 55797 & 56283 & 74136 & 6403 \\ \hline 
+        SMD4 & 42066 & 45672 & 45579 & 49855 & 2188 \\ \hline 
+        SMD5 & 44300 & 50547 & 50450 & 56417 & 2499 \\ \hline 
+        SMD6 & 122540 & 142010 & 141710 & 156390 & 5736 \\ \hline 
+        SMD7 & 128290 & 132460 & 134850 & 189760 & 10517 \\ \hline 
+        SMD8 & 55204 & 63039 & 63093 & 69120 & 3671 \\ \hline 
+    \end{tabular}
+\end{table}
+
 
 \subsection{Experiment 3}
-As it can seen in Table \ref{tab:ll-comparative-vals}, QBCA outperformed BLEAQ-II
+As it can be seen in Table \ref{tab:ll-comparative-vals}, QBCA outperformed BLEAQ-II
 in five test problems in terms of both, upper and lower level median accuracy
 values, and BLEAQ-II was better in the remaining three SMD test problems. 
 
@@ -732,6 +823,28 @@ SMD8 & \textbf{7.8491E-05}  &           7.46E-03 & \textbf{2.1320E-05} &        
 %---------------------------------------------
     \end{tabular}
 \end{table}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[t]
+    \caption{Median accuracy values by QBCA and BLEAQ-II obtained from 31 independent runs. 5-dimensional}
+    \label{tab:ll-comparative-vals-5}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+%---------------------------------------------
+\hline
+& \multicolumn{2}{c|}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
+& QBCA & BLEAQ-II & QBCA & BLEAQ-II \\ \hline
+%---------------------------------------------
+SMD1 & 3.7011E-05 & 2.2382E-05 & 6.5495E-06 & 1.8424E-05\\ \hline 
+SMD2 & 3.8328E-05 & 3.3310E-05 & 5.9320E-06 & 4.6570E-05\\ \hline 
+SMD3 & 2.6711E-05 & 2.7792E-05 & 4.7070E-06 & 2.1052E-05\\ \hline 
+SMD4 & 3.7548E-05 & 3.6568E-06 & 2.3948E-06 & 3.6665E-05\\ \hline 
+SMD5 & 3.7063E-05 & 2.8510E-05 & 8.2375E-06 & 3.9704E-05\\ \hline 
+SMD6 & 1.0716E+01 & 3.1173E-14 & 4.1155E-05 & 2.3946E-16\\ \hline 
+SMD7 & 7.7884E-01 & 2.8465E-05 & 1.2500E+02 & 3.9252E-05\\ \hline 
+SMD8 & 5.8509E-05 & 2.7537E-05 & 7.5347E-06 & 2.1607E-05\\ \hline 
+%---------------------------------------------
+    \end{tabular}
+\end{table}
 
 % -------------------------------------------------
 
@@ -757,6 +870,36 @@ SMD8 & \textbf{2432}  & 5569          &  483680 & \textbf{289886} \\ \hline
 %---------------------------------------------
     \end{tabular}
 \end{table}
+
+\begin{table}[t]
+    \caption{Median NFEs values by QBCA and BLEAQ-II obtained from 31 independent runs. 5-dimensional}
+    \label{tab:ul-comparative-fes-5}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+%---------------------------------------------
+\hline
+& \multicolumn{2}{c|}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
+& QBCA & BLEAQ-II & QBCA & BLEAQ-II \\ \hline
+%---------------------------------------------
+SMD1 & \textbf{210} & 236 & 47951 & \textbf{13692}  \\ \hline 
+SMD2 & \textbf{192} & 320 & 47187 & \textbf{11240}  \\ \hline 
+SMD3 & \textbf{217} & 346 & 55797 & \textbf{20320}  \\ \hline 
+SMD4 & \textbf{167} & 426 & 45672 & \textbf{13094}  \\ \hline 
+SMD5 & \textbf{207} & 494 & 50547 & \textbf{21548}  \\ \hline 
+SMD6 & 2000 & \textbf{566} & 142010 & \textbf{2935}  \\ \hline 
+SMD7 & 2000 & \textbf{494} & 132460 & \textbf{19236}  \\ \hline 
+SMD8 & \textbf{326} & 1561 & 63039 & \textbf{58310}  \\ \hline 
+%---------------------------------------------
+    \end{tabular}
+\end{table}
+
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\linewidth]{img/SMD_5_5.pdf}
+    \caption{Convergence plot for median upper level function value obtained from 31 independent runs of QBCA on SMD1-SMD5 and SMD8 problems with $D_{ul} = D_{ll} = 5$. Log scale is used for visualization purposes.}
+\end{figure*}
+
 % section numerical_result (end)
 
 
@@ -772,7 +915,7 @@ We proposed a population-based metaheuristic for the nested case to solve bileve
 optimization problems. Tykhonov regularization was used to deal with multiple
 optimal solutions at the lower level; the upper and lower level searches were
 carried out by using a variation operator inspired in the center of mass, while
-the lower level search was assisted by a quasi-Newton method to handle unfeasible
+the lower level search was assisted by a quasi-Newton method to handle infeasible
 solutions. Some assumptions were made in order to integrate this physics-inspired
 metaheuristic operator with the quasi-Newton method and a problem relaxation.
 
@@ -808,3 +951,49 @@ project No. 220522.
 \bibliography{IEEEabrv,/home/jesus/Dropbox/escuela/conf/references,/home/jesus/Dropbox/escuela/conf/references-bilevel}
 
 \end{document}
+
+
+% fn & Best &  Median &  Mean &  Worst &  Std. \\ 
+
+% 1 & 4.5863e-16 & 2.2382e-05 & 4.0619e-05 & 1.9653e-04 & 4.5001e-05 \\ \hline 
+% 2 & 2.1918e-06 & 3.3310e-05 & 5.6452e-05 & 4.1273e-04 & 7.6371e-05 \\ \hline 
+% 3 & 1.1316e-09 & 2.7792e-05 & 3.1475e-05 & 8.7653e-05 & 2.9327e-05 \\ \hline 
+% 4 & 3.3100e-08 & 3.6568e-06 & 3.9676e-05 & 3.4330e-04 & 8.0452e-05 \\ \hline 
+% 5 & 3.1308e-06 & 2.8510e-05 & 3.6516e-05 & 1.8344e-04 & 3.5229e-05 \\ \hline 
+% 6 & 1.9080e-16 & 3.1173e-14 & 4.9277e-06 & 1.5275e-04 & 2.7435e-05 \\ \hline 
+% 7 & 6.2096e-07 & 2.8465e-05 & 2.5361e-02 & 9.8207e-02 & 4.3668e-02 \\ \hline 
+% 8 & 2.0677e-07 & 2.7537e-05 & 1.0688e-04 & 1.0679e-03 & 2.5455e-04 \\ \hline 
+% Lower level
+% fn & Best &  Median &  Mean &  Worst &  Std. \\ 
+
+% 1 & 4.5766e-16 & 1.8424e-05 & 2.8316e-05 & 1.1348e-04 & 3.1049e-05 \\ \hline 
+% 2 & 4.4464e-06 & 4.6570e-05 & 9.9648e-05 & 9.3998e-04 & 1.8546e-04 \\ \hline 
+% 3 & 1.0685e-09 & 2.1052e-05 & 3.1275e-05 & 9.9504e-05 & 2.9662e-05 \\ \hline 
+% 4 & 1.0996e-06 & 3.6665e-05 & 8.4546e-05 & 8.4616e-04 & 1.5849e-04 \\ \hline 
+% 5 & 1.9184e-06 & 3.9704e-05 & 6.6987e-05 & 4.3258e-04 & 9.0595e-05 \\ \hline 
+% 6 & 2.5842e-17 & 2.3946e-16 & 3.4793e-09 & 1.0783e-07 & 1.9367e-08 \\ \hline 
+% 7 & 1.3606e-06 & 3.9252e-05 & 6.3005e+01 & 2.4459e+02 & 1.0860e+02 \\ \hline 
+% 8 & 1.7342e-07 & 2.1607e-05 & 4.5825e-05 & 3.2994e-04 & 7.4065e-05 \\ \hline 
+% ======================== NFEs
+% Upper level
+% fn & Best &  Median &  Mean &  Worst &  Std. \\ 
+
+% 1 & 1.2800e+02 & 2.3600e+02 & 3.8355e+02 & 1.1870e+03 & 3.3121e+02 \\ \hline 
+% 2 & 1.1200e+02 & 3.2000e+02 & 3.5374e+02 & 1.1580e+03 & 2.4990e+02 \\ \hline 
+% 3 & 1.6700e+02 & 3.4600e+02 & 4.1077e+02 & 1.2980e+03 & 2.3946e+02 \\ \hline 
+% 4 & 1.4300e+02 & 4.2600e+02 & 5.5916e+02 & 1.4680e+03 & 3.6565e+02 \\ \hline 
+% 5 & 1.6000e+02 & 4.9400e+02 & 6.8906e+02 & 1.8130e+03 & 4.7526e+02 \\ \hline 
+% 6 & 1.7400e+02 & 5.6600e+02 & 5.6658e+02 & 1.3240e+03 & 2.6439e+02 \\ \hline 
+% 7 & 1.5500e+02 & 4.9400e+02 & 5.6148e+02 & 2.5510e+03 & 4.7183e+02 \\ \hline 
+% 8 & 5.3700e+02 & 1.5610e+03 & 1.7747e+03 & 4.3790e+03 & 9.9650e+02 \\ \hline 
+% Lower level
+% fn & Best &  Median &  Mean &  Worst &  Std. \\ 
+
+% 1 & 1.0492e+04 & 1.3692e+04 & 1.5350e+04 & 3.2743e+04 & 5.5010e+03 \\ \hline 
+% 2 & 7.9440e+03 & 1.1240e+04 & 1.3829e+04 & 2.7972e+04 & 5.5791e+03 \\ \hline 
+% 3 & 1.3148e+04 & 2.0320e+04 & 2.1512e+04 & 3.3696e+04 & 5.0018e+03 \\ \hline 
+% 4 & 7.6260e+03 & 1.3094e+04 & 1.4936e+04 & 3.0312e+04 & 6.0690e+03 \\ \hline 
+% 5 & 1.3898e+04 & 2.1548e+04 & 2.5085e+04 & 4.5407e+04 & 9.3279e+03 \\ \hline 
+% 6 & 1.0390e+03 & 2.9350e+03 & 2.8926e+03 & 7.5050e+03 & 1.4548e+03 \\ \hline 
+% 7 & 1.0282e+04 & 1.9236e+04 & 2.2678e+04 & 5.2028e+04 & 1.1598e+04 \\ \hline 
+% 8 & 2.3053e+04 & 5.8310e+04 & 6.0837e+04 & 1.1494e+05 & 2.4758e+04 \\ \hline 
